@@ -1,0 +1,13 @@
+<stack>
+  <description brief="lsd_slam">
+
+	Large-Scale Direct Monocular SLAM
+
+  </description>
+  <author>Maintained by Jakob Engel</author>
+  <license>see http://vision.in.tum.de/lsdslam </license>
+  <review status="unreviewed" notes="under active development"/>
+  <url>http://vision.in.tum.de/lsdslam</url>
+  <depend stack="ros" />
+
+</stack>

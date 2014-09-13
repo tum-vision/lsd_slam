@@ -1,0 +1,243 @@
+%YAML:1.0
+
+# openFABMAPexe Settings File
+
+#---------------------------------------------------------------------------
+
+FilePaths:
+   #The training data video should be of disjoint, non-overlapping scenes
+   #and should not visit the same location more than once
+
+   TrainPath: "C:\\openFABMAP\\trainvideo.avi"
+
+   #The test video should not overlap with the training video but should
+   #have similar environment types.
+
+   TestPath: "C:\\openFABMAP\\testvideo.avi"
+
+   #All feature descriptors extracted from the training data. Used to
+   #create the vocabulary/codebook
+
+   TrainFeatDesc: "C:\\openFABMAP\\vocabularytraindata.yml"
+
+   #All bag-of-words type whole image descriptors extracted from the 
+   #training data. Used to create the chow-liu tree and used in the
+   #FabMap 'new place' likelihood calculation
+
+   TrainImagDesc: "C:\\openFABMAP\\BOWtraindata.yml"
+   
+   #The vocabulary/codebook itself
+
+   Vocabulary: "C:\\openFABMAP\\vocabulary.yml"
+   
+   #The Chow-Liu Tree itself
+
+   ChowLiuTree: "C:\\openFABMAP\\tree.yml"
+
+   #The FabMap Test
+
+   TestImageDesc: "C:\\openFABMAP\\BOWtestdata.yml"
+
+   #The FabMap results
+
+   FabMapResults: "C:\\openFABMAP\\results.txt"
+
+#---------------------------------------------------------------------------
+
+# openFABMAP running mode:
+
+# "ShowFeatures"
+# "GenerateVocabTrainData"
+# "TrainVocabulary"
+# "GenerateFABMAPTrainData"
+# "TrainChowLiuTree"
+# "GenerateFABMAPTestData"
+# "RunOpenFABMAP"
+
+Function: "ShowFeatures"
+
+#---------------------------------------------------------------------------
+
+FeatureOptions:
+
+   # Feature Detection Options
+   # "FAST"
+   # "STAR"
+   # "SIFT"
+   # "SURF"
+   # "MSER"
+
+   DetectorType: "STAR"
+   
+   # Feature Detection Modes
+   # "STATIC"
+   # "ADAPTIVE"
+   
+   DetectorMode: "STATIC"
+   
+   #ADAPTIVE SETTINGS
+   
+   Adaptive:
+      MinFeatures: 300
+      MaxFeatures: 500
+      MaxIters: 5
+      
+   # STATIC SETTINGS
+   
+   FastDetector:
+      Threshold: 50
+      NonMaxSuppression: 1
+
+   StarDetector:
+      MaxSize: 32 #45
+      Response: 10 #30
+      LineThreshold: 18 #10
+      LineBinarized: 18 #8
+      Suppression: 20 #5
+
+   SiftDetector:
+      EdgeThreshold: 10
+      ContrastThreshold: 0.04
+      
+      #OPENCV2.4only
+      NumFeatures: 200
+      NumOctaveLayers: 3
+      Sigma: 1.6
+
+   SurfDetector:
+      HessianThreshold: 1000 #400
+      NumOctaves: 4
+      NumOctaveLayers: 2 
+      Upright: 1
+      Extended: 0
+
+   MSERDetector:
+      Delta: 5
+      MinArea: 60
+      MaxArea: 14400 
+      MaxVariation: 0.25
+      MinDiversity: 0.2
+      MaxEvolution: 200  
+      AreaThreshold: 1.01  
+      MinMargin: 0.003  
+      EdgeBlurSize: 5   
+
+   # Descriptor Extraction Options
+   # "SIFT"
+   # "SURF"
+
+   ExtractorType: "SURF"
+#---------------------------------------------------------------------------
+
+#An option to throw away frames with low numbers of different words.
+#Setting this to 0 turns off this feature
+
+BOWOptions:
+
+   MinWords: 0
+
+#---------------------------------------------------------------------------
+
+VocabTrainOptions:
+
+   # a smaller clustersize increases the specificity of each codeword
+   # and will increase the number of words in the vocabulary
+
+   ClusterSize: 0.45
+
+#---------------------------------------------------------------------------
+
+ChowLiuOptions:
+
+   # a large amount of data is required to store all mutual information from
+   # which the minimum spanning tree is created. e.g. an 8000 word codebook 
+   # requires 1.2 Gb RAM. Increasing the threshold results in information being 
+   # discarded, and a lower memory requirement. Too high a threshold may result 
+   # in necessary information being discarded and the tree not being created.
+   #A threshold of 0 takes longer and may fail due to memory requirements
+
+   LowerInfoBound: 0.0005
+
+#---------------------------------------------------------------------------
+
+# Method to add new location to the FabMap location list
+# "All"
+# "NewMaximumOnly"
+
+FabMapPlaceAddition: "All"
+
+openFabMapOptions:
+
+   #Detector Model
+
+   PzGe: 0.39
+   PzGne: 0
+
+   #The method to calculate the likelihood of a 'new location'
+   #Note, FAB-MAP2.0 cannot use mean-field
+   # "Sampled"
+   # "Meanfield"
+
+   NewPlaceMethod: "Sampled"
+
+   #if using "sampled" method how many samples from training data to use
+
+   NumSamples: 3000
+
+   # The option to switch off FabMap's feature dependency model (Chow-Liu tree)
+   # in the likelihood calculations
+   # "Naive"
+   # "ChowLiu"
+
+   BayesMethod: "ChowLiu"
+
+   # The option to switch on and off the addition of a simple motion model
+   # which assumes links between sequential additions to the query space.
+   # 0 for False, 1 for True
+
+   SimpleMotion: 0
+
+   # Which version of openFABMAP to run
+   # "FABMAP1"
+   # "FABMAPLUT"
+   # "FABMAPFBO"
+   # "FABMAP2"
+
+   FabMapVersion: "FABMAP2"
+      
+   #FabMap1:
+
+      # no additional options
+      
+   FabMapLUT:
+
+      # precision with which to store precomputed values (decimal places)
+
+      Precision: 6
+
+   FabMapFBO:
+      # The loglikelihood bound beneath the best hypothesis at which other
+      # hypotheses are always retained
+
+      RejectionThreshold: 1e-6
+      
+      # The likelihood bound of a hypothesis 'overtaking' the current best 
+      # hypothesis, below which hypotheses are discarded. Used to compute delta
+
+      PsGd: 1e-6
+
+      # The largest value of delta when computing it via the bisection method
+
+      BisectionStart: 512
+
+      # The number of iterations to perform the bisection. Bisection accuracy = 
+      # BisectionStart / 2^BisectionIts
+
+      BisectionIts: 9
+      
+
+   #FabMap2:
+
+      # no additional options
+
+#---------------------------------------------------------------------------

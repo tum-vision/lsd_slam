@@ -19,26 +19,26 @@ example-input datasets, and the generated output as rosbag or .ply pointcloud.
 
 First, install LSD-SLAM following 2.1 or 2.2, depending on your Ubuntu / ROS version. You don't need OpenFabMap for now.
 
-Download the sequence from XXXXX
+Download the [Room Example Sequence](http://vmcremers8.informatik.tu-muenchen.de/lsd/LSD_room.bag.zip) and extract it.
 
 
-Launch the viewer:
+Launch the lsd_slam viewer:
 
 		rosrun lsd_slam_viewer viewer
 
-Launch the ros node:
+Launch the lsd_slam main ros node:
 
 		rosrun lsd_slam_core live_slam image:=/image_raw camera_info:=/camera_info
 
 Play the sequence:
 
-		rosbag play ~/name.bag
+		rosbag play ~/LSD_room.bag
 
 
 
 You should see one windows showing the current Keyframe with color-coded depth (from live_slam), 
 and one window showing the 3D map (from viewer). If for some reason the initialization fails 
-(i.e., after ~5s the depthmap still looks wrong), focus the depthmap and hit 'r' to re-initializee.
+(i.e., after ~5s the depthmap still looks wrong), focus the depthmap and hit 'r' to re-initialize.
 
 
 
@@ -112,7 +112,7 @@ We suggest to use the [2.4.8](https://github.com/Itseez/opencv/releases/tag/2.4.
 
 # 3 Usage
 LSD-SLAM is split into two ROS packages, `lsd_slam_core` and `lsd_slam_viewer`. `lsd_slam_core` contains the full SLAM system, whereas `lsd_slam_viewer` is optionally used for 3D visualization.
-Please also read **Genenral Notes for good results**
+Please also read **Genenral Notes for good results** below.
 
 ## 3.1 `lsd_slam_core`
 We provide two different usage modes, one meant for live-operation (`live_slam`) using ROS input/output, and one `dataset_slam` to use on datasets in the form of image files.
@@ -141,7 +141,7 @@ Specify `_hz:=0` to sequentialize tracking and mapping, i.e. make sure that ever
 
 
 ### 3.1.3 Camera Calibration
-LSD-SLAM operates on a pinhole camera model, however we give the option to undistort images before the are being used. You can find some sample calib files in `lsd_slam_core/calib`.
+LSD-SLAM operates on a pinhole camera model, however we give the option to undistort images before they are being used. You can find some sample calib files in `lsd_slam_core/calib`.
 
 #### Calibration File for FOV camera model:
 
@@ -173,17 +173,17 @@ This one is with no radial Distrotion, as a special case of ATAN camera model bu
 
 ### 3.1.4 Useful Hotkeys
 
-- `r` Do a full reset
+- `r`: Do a full reset
 
-- `d / e` Cycle through debug displays (in particular color-coded variance and color-coded inverse depth).
+- `d / e`: Cycle through debug displays (in particular color-coded variance and color-coded inverse depth).
 
-- `o` Toggle on screen info display
+- `o`: Toggle on screen info display
 
-- `m` Save current state of the map (depth & variance) as images to `lsd_slam_core/save/`
+- `m`: Save current state of the map (depth & variance) as images to `lsd_slam_core/save/`
 
-- `p` Brute-Force-Try to find new constraints. May improove the map by finding more constraints, but will block mapping for a while. 
+- `p`: Brute-Force-Try to find new constraints. May improove the map by finding more constraints, but will block mapping for a while. 
 
-- `l` Manually indicate that tracking is lost: will stop tracking and mapping, and start the re-localizer.
+- `l`: Manually indicate that tracking is lost: will stop tracking and mapping, and start the re-localizer.
 
 
 
@@ -258,11 +258,11 @@ You should never have to restart the viewer node, it resets the graph automatica
 
 ### 3.2.1 Useful Hotkeys
 
-- `r` Reset, will clear all displayed data.
+- `r`: Reset, will clear all displayed data.
 
-- `w` Print the number of points / currently displayed points / keyframes / constraints to the console.
+- `w`: Print the number of points / currently displayed points / keyframes / constraints to the console.
 
-- `p` Write currently displayed points as PointCloud to file lsd_slam_viewer/pc.ply, which can be opened e.g. in meshlab. Use in combination with sparsityFactor to reduce the number of points.
+- `p`: Write currently displayed points as PointCloud to file lsd_slam_viewer/pc.ply, which can be opened e.g. in meshlab. Use in combination with sparsityFactor to reduce the number of points.
 
 
 ### 3.2.2 Parameters (Dynamic Reconfigure)
@@ -279,6 +279,7 @@ You should never have to restart the viewer node, it resets the graph automatica
 - `minNearSupport `: only plot points that have #minNearSupport similar neighbours (higher values remove outliers) min: 0, default: 7, max: 9
 - `cutFirstNKf `: do not display the first #cutFirstNKf keyframe's pointclouds, to remove artifacts left-over from the random initialization. min: 0, default: 5, max: 100
 - `sparsifyFactor `: only plot one out of #sparsifyFactor points, selected at random. Use this to significantly speed up rendering for large maps. min: 1, default: 1, max: 100
+- `sceneRadius `: defines near- and far clipping plane. Decrease, to be able to zoom in more. min: 1, default: 80, max: 200
 - `saveAllVideo `: save all rendered images... only use if you know what you are doing. min: False, default: False, max: True
 - `keepInMemory `: If set to false, Pointcloud is only stored in OpenGL buffers, and not kept in RAM. This greatly reduces the required RAM for large maps, however also prohibits saving / dynamically changing sparsifyFactor and variance-thresholds. min: False, default: True, max: True
 
@@ -292,7 +293,7 @@ For convenience, we provide a number of datasets, including the video, lsd-slam'
 [http://vision.in.tum.de/lsdslam](http://vision.in.tum.de/lsdslam)
 
 
-# 5 Licence
+# 5 License
 LSD-SLAM is licensed under the GNU General Public License Version 3 (GPLv3), see http://www.gnu.org/licenses/gpl.html.
 
 For commercial purposes, we also offer a professional version under different licencing terms.

@@ -1,0 +1,17 @@
+<package>
+  <description brief="SemiDenseSLAM">
+
+     Large-Scale Direct Monocular SLAM
+
+  </description>
+  <author>Jakob Engel</author>
+  <license>see http://vision.in.tum.de/lsdslam </license>
+  <review status="unreviewed" notes=""/>
+  <url>http://vision.in.tum.de/lsdslam</url>
+  <depend package="cv_bridge"/>
+  <depend package="dynamic_reconfigure"/>
+  <depend package="sensor_msgs"/>
+  <depend package="roslib"/>
+  <depend package="rosbag"/>
+  <depend package="lsd_slam_viewer"/>
+</package> 

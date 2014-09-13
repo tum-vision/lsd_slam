@@ -1,0 +1,11 @@
+################################################################################
+# Sophus source dir
+set( Sophus_SOURCE_DIR "@CMAKE_CURRENT_SOURCE_DIR@")
+
+################################################################################
+# Sophus build dir
+set( Sophus_DIR "@CMAKE_CURRENT_BINARY_DIR@")
+
+################################################################################
+set( Sophus_INCLUDE_DIR  "@Sophus_INCLUDE_DIR@" )
+set( Sophus_INCLUDE_DIRS  "@Sophus_INCLUDE_DIR@" )
