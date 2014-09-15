@@ -1,10 +1,10 @@
 # LSD-SLAM: Large-Scale Direct Monocular SLAM
 
-LSD-SLAM is a novel approach to Real-Time Monocular SLAM. It is fully direct (i.e. does not use keypoints / features) and creates large-scale, 
+LSD-SLAM is a novel approach to real-time monocular SLAM. It is fully direct (i.e. does not use keypoints / features) and creates large-scale, 
 semi-dense maps in real-time on a laptop. For more information see
 [http://vision.in.tum.de/lsdslam](http://vision.in.tum.de/lsdslam)
 where you can also find the corresponding publications and Youtube videos, as well as some 
-example-input datasets, and the generated output as rosbag or .ply pointcloud.
+example-input datasets, and the generated output as rosbag or .ply point cloud.
 
 
 ### Related Papers
@@ -17,7 +17,7 @@ example-input datasets, and the generated output as rosbag or .ply pointcloud.
 
 # 1. Quickstart / Minimal Setup
 
-First, install LSD-SLAM following 2.1 or 2.2, depending on your Ubuntu / ROS version. You don't need OpenFabMap for now.
+First, install LSD-SLAM following 2.1 or 2.2, depending on your Ubuntu / ROS version. You don't need openFabMap for now.
 
 Download the [Room Example Sequence](http://vmcremers8.informatik.tu-muenchen.de/lsd/LSD_room.bag.zip) and extract it.
 
@@ -36,14 +36,14 @@ Play the sequence:
 
 
 
-You should see one windows showing the current Keyframe with color-coded depth (from live_slam), 
+You should see one window showing the current keyframe with color-coded depth (from live_slam), 
 and one window showing the 3D map (from viewer). If for some reason the initialization fails 
-(i.e., after ~5s the depthmap still looks wrong), focus the depthmap and hit 'r' to re-initialize.
+(i.e., after ~5s the depth map still looks wrong), focus the depth map and hit 'r' to re-initialize.
 
 
 
 # 2. Installation
-We tested LSD-SLAM on two differen system configurations, Using Ubuntu 12.04 (Precise) and ROS fuerte, or Ubuntu 14.04 (trusty) and ROS indigo. Note that building without ROS is not supported, however ROS is only used for input and output, facilitating easy portability to other platforms.
+We tested LSD-SLAM on two different system configurations, using Ubuntu 12.04 (Precise) and ROS fuerte, or Ubuntu 14.04 (trusty) and ROS indigo. Note that building without ROS is not supported, however ROS is only used for input and output, facilitating easy portability to other platforms.
 
 
 ## 2.1 ROS fuerte + Ubuntu 12.04
@@ -94,16 +94,16 @@ Compile the two package by typing:
 
 
 
-## 2.3 OpenFabMap for large loop-closure detection [optional]
-If you want to use OpenFABMAP for large loop closure detection, uncomment the following lines in `lsd_slam_core/CMakeLists.txt` :
+## 2.3 openFabMap for large loop-closure detection [optional]
+If you want to use openFABMAP for large loop closure detection, uncomment the following lines in `lsd_slam_core/CMakeLists.txt` :
 
     #add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
     #include_directories(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap/include)
     #add_definitions("-DHAVE_FABMAP")
     #set(FABMAP_LIB openFABMAP )
 
-**Note for Ubuntu 14.04:** The packaged OpenCV for Ubuntu 14.04 does not include the nonfree module, which is required for OpenFabMap (which requires SURF features).
-You need to get a full version of OpenCV with nonfree module, which is easiest by compiling your own verrsion. 
+**Note for Ubuntu 14.04:** The packaged OpenCV for Ubuntu 14.04 does not include the nonfree module, which is required for openFabMap (which requires SURF features).
+You need to get a full version of OpenCV with nonfree module, which is easiest by compiling your own version. 
 We suggest to use the [2.4.8](https://github.com/Itseez/opencv/releases/tag/2.4.8) version, to assure compatibility with the current indigo open-cv package.
 
 
@@ -155,7 +155,7 @@ Here, d1 to d5 are fx/width fy/height cx/width cy/height d, as given by the PTAM
 
 
 #### Calibration File for Pre-Rectified Images
-This one is with no radial Distrotion, as a special case of ATAN camera model but without the computational cost:
+This one is with no radial distortion, as a special case of ATAN camera model but without the computational cost:
 
     fx/width fy/height cx/width cy/height 0
     width height
@@ -196,32 +196,32 @@ or (for ROS indigo)
 
     rosrun rqt_reconfigure rqt_reconfigure
 
-Parameters are split into two parts, ones that enable / disable various sorts of debug output in `/LSD_SLAM/Debug`, and ones that affect the actual Algorithm, in `/LSD_SLAM`.
+Parameters are split into two parts, ones that enable / disable various sorts of debug output in `/LSD_SLAM/Debug`, and ones that affect the actual algorithm, in `/LSD_SLAM`.
 
 
-* `minUseGrad`: [double] Minimal Absolut Image Gradient for a Pixel to be used at all. Increase, if your camera has large image noise, decrease if you have low image-noise and want to also exploit small gradients.
-* `cameraPixelNoise`: [double] Image intensity noise used for e.g. tracking weight calculation. Sould be set larger than the actual sensor-noise, to also account for noise originating from discretization / linear interpolation.
-* `KFUsageWeight`: [double] Determines how often Keyframes are taken, depending on the Overlap to the current Keyframe. Larger -> more Keyframes.
-* `KFDistWeight`: [double] Determines how often Keyframes are taken, depending on the Distance to the current Keyframe. Larger -> more Keyframes.
-* `doSLAM`: [bool] Toggle Global Mapping Component on/off. Only takes effect after a reset.
-* `doKFReActivation`: [bool] Toggle Keyframe Re-Activation on/off: If close to an existing keyframe, re-activate it instead of creating a new one. If false, Map will continually grow even if the camera moves in a relatively constrained area; If false, the number of keyframes will not grow arbitrarily.
-* `doMapping`: [bool] Toggle entire Keyframe Creating / Update module on/off: If false, only tracking stays active, which will prevent rapid motion or moving objects from corrupting the map.
-* `useFabMap`: [bool] Use OpenFABMAP to find large loop-closures. Only takes effect after a reset, and requires LSD-SLAM to be compiled with FabMap.
-* `allowNegativeIdepths`: [bool] Allow idepth to be (slightle) negative, to avoid introducing a bias for far-away points.
-* `useSubpixelStereo"`: [bool] Compute subpixel-accurate stereo disparity.
-* `useAffineLightningEstimation`: [bool] EXPERIMENTAL: Correct for global affine intensity changes during tracking. Might help if you have Problems with Auto-Exposure.
-* `multiThreading`: [bool] Toggle Multi-Threading of DepthMap Estimation. Disable for less CPU usage, but possibly slightly less quality.
-* `maxLoopClosureCandidates`: [int] Maximal of Loop-Closures that are tracked initially for each new keyframe.
-* `loopclosureStrictness`: [double] Threshold on reciprocal loop-closure consistency check, to be added to the map. Larger -> more (possibly wrong) Loopclosures.
-* `relocalizationTH`: [double] How good a relocalization-attempt has to be, to be accepted. Larger -> More Strict.
-* `depthSmoothingFactor`: [double] How much to smooth the depth map. Larger -> Less Smoothing
+* `minUseGrad`: [double] Minimal absolut image gradient for a pixel to be used at all. Increase if your camera has large image noise, decrease if you have low image-noise and want to also exploit small gradients.
+* `cameraPixelNoise`: [double] Image intensity noise used for e.g. tracking weight calculation. Should be set larger than the actual sensor-noise, to also account for noise originating from discretization / linear interpolation.
+* `KFUsageWeight`: [double] Determines how often keyframes are taken, depending on the overlap to the current keyframe. Larger -> more keyframes.
+* `KFDistWeight`: [double] Determines how often keyframes are taken, depending on the distance to the current Keyframe. Larger -> more keyframes.
+* `doSLAM`: [bool] Toggle global mapping component on/off. Only takes effect after a reset.
+* `doKFReActivation`: [bool] Toggle keyframe re-activation on/off: If close to an existing keyframe, re-activate it instead of creating a new one. If false, the map will continually grow even if the camera moves in a relatively constrained area; If false, the number of keyframes will not grow arbitrarily.
+* `doMapping`: [bool] Toggle entire keyframe creating / update module on/off: If false, only tracking stays active, which will prevent rapid motion or moving objects from corrupting the map.
+* `useFabMap`: [bool] Use openFABMAP to find large loop-closures. Only takes effect after a reset, and requires LSD-SLAM to be compiled with FabMap.
+* `allowNegativeIdepths`: [bool] Allow idepth to be (slightly) negative to avoid introducing a bias for far-away points.
+* `useSubpixelStereo`: [bool] Compute subpixel-accurate stereo disparity.
+* `useAffineLightningEstimation`: [bool] EXPERIMENTAL: Correct for global affine intensity changes during tracking. Might help if you have problems with auto-exposure.
+* `multiThreading`: [bool] Toggle multi-threading of depth map estimation. Disable for less CPU usage, but possibly slightly less quality.
+* `maxLoopClosureCandidates`: [int] Maximal number of loop-closures that are tracked initially for each new keyframe.
+* `loopclosureStrictness`: [double] Threshold on reciprocal loop-closure consistency check, to be added to the map. Larger -> more (possibly wrong) loop-closures.
+* `relocalizationTH`: [double] How good a relocalization-attempt has to be to be accepted. Larger -> more strict.
+* `depthSmoothingFactor`: [double] How much to smooth the depth map. Larger -> less smoothing.
 
 
 Useful for debug output are:
 
-* `plotStereoImages`: [bool] Plot Searched Stereo Lines, and color-coded stereo-results. Nice Visualization of what's going on, however drastically decreases mapping speed.
-* `plotTracking`: [bool] Plot final tracking residual. Nice Visualization of what's going on, however drastically decreases tracking speed.
-* `continuousPCOutput`: [bool] Publish Current Keyframe's Pointcloud after each update, to be seen in the viewer. Nice Visualization, however bad for performance and bandwith.
+* `plotStereoImages`: [bool] Plot searched stereo lines, and color-coded stereo-results. Nice visualization of what's going on, however drastically decreases mapping speed.
+* `plotTracking`: [bool] Plot final tracking residual. Nice visualization of what's going on, however drastically decreases tracking speed.
+* `continuousPCOutput`: [bool] Publish current keyframe's point cloud after each update, to be seen in the viewer. Nice visualization, however bad for performance and bandwith.
 
 
 
@@ -231,19 +231,19 @@ Useful for debug output are:
 
 ### 3.1.6 General Notes for Good Results
 
-* Use a **global-shutter** camera. Using a rolling shutter will lead to inferior results.
+* Use a **global shutter** camera. Using a rolling shutter will lead to inferior results.
 * Use a lens with a **wide field-of-view** (we use a 130° fisheye lens).
 * Use a **high framerate**, at least 30fps (depending on the movements speed of course). For our experiments, we used between 30 and 60 fps. 
 * We recommend an image resolution of **640x480**, significantly higher or lower resolutions may require some hard-coded parameters to be adapted.
-* LSD-SLAM is a monocular SLAM system, and as such cannot estimate the absolute scale of the map. Further it requires **sufficient camera translation**: Rotating the camera without translating it at the same time will not work. Generally sideways-motion is best - depending on the field of view of your camera, forwards / backwards motion is equally good. Rotation around the optical axis does not cause any problems.
-* During Initialization, it is best to move the camera in a circle parallel to the image, without rotating it. The scene should contain sufficient structure (intensity gradient at different depths).
+* LSD-SLAM is a monocular SLAM system, and as such cannot estimate the absolute scale of the map. Further it requires **sufficient camera translation**: Rotating the camera without translating it at the same time will not work. Generally sideways motion is best - depending on the field of view of your camera, forwards / backwards motion is equally good. Rotation around the optical axis does not cause any problems.
+* During initialization, it is best to move the camera in a circle parallel to the image without rotating it. The scene should contain sufficient structure (intensity gradient at different depths).
 * **Adjust** `minUseGrad` **and** `cameraPixelNoise` to fit the sensor-noise and intensity contrast of your camera.
-* If tracking / mapping quality is poor, try decreasing the keyframe thresholds `KFUsageWeight` and `KFDistWeight` slightly, to generate more keyframes.
+* If tracking / mapping quality is poor, try decreasing the keyframe thresholds `KFUsageWeight` and `KFDistWeight` slightly to generate more keyframes.
 * Note that LSD-SLAM is very much non-deterministic, i.e. results will be different each time you run it on the same dataset. This is due to parallelism, and the fact that small changes regarding when keyframes are taken will have a huge impact on everything that follows afterwards.
 
 
 ## 3.2 LSD-SLAM Viewer
-The viewer is only for visualization. It can also be used to output a generated pointcloud as .ply.
+The viewer is only for visualization. It can also be used to output a generated point cloud as .ply.
 Start it using
 
     rosrun lsd_slam_viewer viewer
@@ -262,26 +262,26 @@ You should never have to restart the viewer node, it resets the graph automatica
 
 - `w`: Print the number of points / currently displayed points / keyframes / constraints to the console.
 
-- `p`: Write currently displayed points as PointCloud to file lsd_slam_viewer/pc.ply, which can be opened e.g. in meshlab. Use in combination with sparsityFactor to reduce the number of points.
+- `p`: Write currently displayed points as point cloud to file lsd_slam_viewer/pc.ply, which can be opened e.g. in meshlab. Use in combination with sparsityFactor to reduce the number of points.
 
 
 ### 3.2.2 Parameters (Dynamic Reconfigure)
 
-- `showKFCameras `: Toggle Drawing of blue Keyframe Camera-Frustrums min: False, default: True, max: True
-- `showKFPointclouds `: Toggle Drawing of Pointclouds for all Keyframes min: False, default: True, max: True
-- `showConstraints `: Toggle Drawing of red/green Pose-Graph Constraints min: False, default: True, max: True
-- `showCurrentCamera `: Toggle Drawing of red Frustrum for the current Camera Pose min: False, default: True, max: True
-- `showCurrentPointcloud `: Toggle Drawing of the latest pointcloud added to the map min: False, default: True, max: True
-- `pointTesselation `: Size of Points min: 0.0, default: 1.0, max: 5.0
-- `lineTesselation `: Width of Lines min: 0.0, default: 1.0, max: 5.0
-- `scaledDepthVarTH `: log10 of threshold on point's variance, in the respective keyframe's scale.  min: -10.0, default: -3.0, max: 1.0
+- `showKFCameras `: Toggle drawing of blue keyframe camera-frustrums. min: False, default: True, max: True
+- `showKFPointclouds `: Toggle drawing of point clouds for all keyframes. min: False, default: True, max: True
+- `showConstraints `: Toggle drawing of red/green pose-graph constraints. min: False, default: True, max: True
+- `showCurrentCamera `: Toggle drawing of red frustrum for the current camera pose. min: False, default: True, max: True
+- `showCurrentPointcloud `: Toggle drawing of the latest point cloud added to the map. min: False, default: True, max: True
+- `pointTesselation `: Size of points. min: 0.0, default: 1.0, max: 5.0
+- `lineTesselation `: Width of lines. min: 0.0, default: 1.0, max: 5.0
+- `scaledDepthVarTH `: log10 of threshold on point's variance, in the respective keyframe's scale. min: -10.0, default: -3.0, max: 1.0
 - `absDepthVarTH `: log10 of threshold on point's variance, in absolute scale. min: -10.0, default: -1.0, max: 1.0
-- `minNearSupport `: only plot points that have #minNearSupport similar neighbours (higher values remove outliers) min: 0, default: 7, max: 9
-- `cutFirstNKf `: do not display the first #cutFirstNKf keyframe's pointclouds, to remove artifacts left-over from the random initialization. min: 0, default: 5, max: 100
-- `sparsifyFactor `: only plot one out of #sparsifyFactor points, selected at random. Use this to significantly speed up rendering for large maps. min: 1, default: 1, max: 100
-- `sceneRadius `: defines near- and far clipping plane. Decrease, to be able to zoom in more. min: 1, default: 80, max: 200
-- `saveAllVideo `: save all rendered images... only use if you know what you are doing. min: False, default: False, max: True
-- `keepInMemory `: If set to false, Pointcloud is only stored in OpenGL buffers, and not kept in RAM. This greatly reduces the required RAM for large maps, however also prohibits saving / dynamically changing sparsifyFactor and variance-thresholds. min: False, default: True, max: True
+- `minNearSupport `: Only plot points that have #minNearSupport similar neighbours (higher values remove outliers). min: 0, default: 7, max: 9
+- `cutFirstNKf `: Do not display the first #cutFirstNKf keyframe's point clouds, to remove artifacts left-over from the random initialization. min: 0, default: 5, max: 100
+- `sparsifyFactor `: Only plot one out of #sparsifyFactor points, selected at random. Use this to significantly speed up rendering for large maps. min: 1, default: 1, max: 100
+- `sceneRadius `: Defines near- and far clipping plane. Decrease to be able to zoom in more. min: 1, default: 80, max: 200
+- `saveAllVideo `: Save all rendered images... only use if you know what you are doing. min: False, default: False, max: True
+- `keepInMemory `: If set to false, the point cloud is only stored in OpenGL buffers, and not kept in RAM. This greatly reduces the required RAM for large maps, however also prohibits saving / dynamically changing sparsifyFactor and variance-thresholds. min: False, default: True, max: True
 
 
 
@@ -289,7 +289,7 @@ You should never have to restart the viewer node, it resets the graph automatica
 
 # 4 Datasets
 
-For convenience, we provide a number of datasets, including the video, lsd-slam's output and the generated pointcloud as .ply. See
+For convenience we provide a number of datasets, including the video, lsd-slam's output and the generated point cloud as .ply. See
 [http://vision.in.tum.de/lsdslam](http://vision.in.tum.de/lsdslam)
 
 
