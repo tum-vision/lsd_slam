@@ -39,7 +39,7 @@ std::vector<string> getFileList(string s, string filter)
 	std::vector<string> v;
 	dpdf = opendir(s.c_str());
 	if (dpdf != NULL){
-	   while (epdf = readdir(dpdf))
+	   while ((epdf = readdir(dpdf)))
 		   if(epdf->d_name[0] != '.' && (filter=="" || string(epdf->d_name).find(filter) != string::npos))
 			   v.push_back(s+epdf->d_name);
 	}
@@ -199,7 +199,7 @@ int inlayVid3( int argc, char** argv )
 
 	// get odometry timestamps
 	std::vector<long> odometryTimestamps;
-	for(int i=0; i<odometryFilesIdepth.size(); i++)
+	for(size_t i=0; i<odometryFilesIdepth.size(); ++i)
 	{
 		long id = -1;
 
@@ -217,7 +217,7 @@ int inlayVid3( int argc, char** argv )
 	// get pc timestamps
 	std::vector<long> pointcloudTimestamps;
 	std::vector<long> pointcloudIDs;
-	for(int i=0; i<pointcloudFiles.size(); i++)
+	for(size_t i=0; i<pointcloudFiles.size(); ++i)
 	{
 		long id = -1, time = -1;
 
@@ -235,8 +235,8 @@ int inlayVid3( int argc, char** argv )
 
 
 	// sort pc's (brutally slow, but hey)
-	for(int i=0;i<pointcloudIDs.size();i++)
-		for(int j=i+1;j<pointcloudIDs.size();j++)
+	for(size_t i=0; i<pointcloudIDs.size(); ++i)
+		for(size_t j=i+1; j<pointcloudIDs.size(); ++j)
 			if(pointcloudIDs[i] > pointcloudIDs[j])
 			{
 				long tmp = pointcloudTimestamps[i];
@@ -255,21 +255,27 @@ int inlayVid3( int argc, char** argv )
 
 
 
-	system("rm -rf save_output_age");
-	system("rm -rf save_output_var");
-	system("rm -rf save_output_idepth");
+	if(!system("rm -rf save_output_age"))
+		printf("system call failed!");
+	if(!system("rm -rf save_output_var"))
+		printf("system call failed!");
+	if(!system("rm -rf save_output_idepth"))
+		printf("system call failed!");
 
 
-	system("mkdir save_output_age");
-	system("mkdir save_output_var");
-	system("mkdir save_output_idepth");
+	if(!system("mkdir save_output_age"))
+		printf("system call failed!");
+	if(!system("mkdir save_output_var"))
+		printf("system call failed!");
+	if(!system("mkdir save_output_idepth"))
+		printf("system call failed!");
 
 
 
 	char buf[1000];
 	int c = 0;
 	float currentShift = 0;
-	for(int i=0;i<pointcloudFiles.size();i++)
+	for(size_t i=0; i<pointcloudFiles.size(); ++i)
 	{
 		// skip if invalid
 		if(pointcloudTimestamps[i] == -1)
@@ -281,7 +287,7 @@ int inlayVid3( int argc, char** argv )
 		// find closest
 		long mindiff = pointcloudTimestamps[i];
 		int mindiffIDX = 0;
-		for(int j=0;j<odometryTimestamps.size();j++)
+		for(size_t j=0; j<odometryTimestamps.size(); ++j)
 			if(pointcloudTimestamps[i] - odometryTimestamps[j] < mindiff &&
 					- pointcloudTimestamps[i] + odometryTimestamps[j] < mindiff)
 			{
@@ -367,7 +373,7 @@ std::vector<long> getTimestamps(std::vector<string> names, string prefix)
 {
 	std::vector<long> ts;
 
-	for(int i=0; i<names.size(); i++)
+	for(size_t i=0; i<names.size(); ++i)
 	{
 		long id = -1;
 		long tss = -1;
@@ -409,8 +415,10 @@ int inlayVidNew1( int argc, char** argv )
 	std::vector<long> trackedTimes = getTimestamps(odometryFilesTracked,"tracked");
 
 
-	system(("rm -rf "+target).c_str());
-	system(("mkdir "+target).c_str());
+	if(!system(("rm -rf "+target).c_str()))
+		printf("system call failed!");
+	if(!system(("mkdir "+target).c_str()))
+		printf("system call failed!");
 
 
 	// put the best fitting frame into each pc file
@@ -558,15 +566,23 @@ int inlayVid( int argc, char** argv )
 
 
 
-	system("rm -rf save_output_age");
-	system("rm -rf save_output_idepth");
-	system("rm -rf save_output_stereo");
-	system("rm -rf save_output_var");
+	if(!system("rm -rf save_output_age"))
+		printf("system call failed!");
+	if(!system("rm -rf save_output_idepth"))
+		printf("system call failed!");
+	if(!system("rm -rf save_output_stereo"))
+		printf("system call failed!");
+	if(!system("rm -rf save_output_var"))
+		printf("system call failed!");
 
-	system("mkdir save_output_age");
-	system("mkdir save_output_idepth");
-	system("mkdir save_output_stereo");
-	system("mkdir save_output_var");
+	if(!system("mkdir save_output_age"))
+		printf("system call failed!");
+	if(!system("mkdir save_output_idepth"))
+		printf("system call failed!");
+	if(!system("mkdir save_output_stereo"))
+		printf("system call failed!");
+	if(!system("mkdir save_output_var"))
+		printf("system call failed!");
 
 
 	char buf[1000];
@@ -729,17 +745,23 @@ int inlayVid2( int argc, char** argv )
 	std::sort(idepthFiles.begin(), idepthFiles.end());
 
 	assert(imgFiles.size() == idepthFiles.size());
-	system("rm -rf save_cam2_out");
-	system("mkdir save_cam2_out");
+	if(!system("rm -rf save_cam2_out"))
+		printf("system call failed!");
+	if(!system("mkdir save_cam2_out"))
+		printf("system call failed!");
 
 	cv::Mat plot = cv::imread("plot.png");
+	/*
 	float plot0Px = 141;
 	float plotEndPx = 1657;
 	double plotTime = 64;						// time between plot0Px and plotEndPx
 	double plotTimeOffset = 1364295759.4671;	// offset of plot-0s in seconds
+	*/
 
+	/*
 	int leftBarStart = 0, leftBarMid = 23, leftBarRight = 40;
 	int rightBarStart = 1782, rightBarMid = 1800, rightBarRight = 1811;
+	*/
 
 
 
@@ -1181,7 +1203,7 @@ void downsample(std::string folder, int lvl)
 	int w = 640;
 	int h = 480;
 
-	for(int i=0;i<d.size();i++)
+	for(size_t i=0; i<d.size(); ++i)
 	{
 		cv::Mat depth = cv::imread(d[i], CV_LOAD_IMAGE_UNCHANGED);
 		cv::Mat depthDown = cv::Mat(depth.rows / fac, depth.cols / fac, depth.type());
@@ -1193,15 +1215,15 @@ void downsample(std::string folder, int lvl)
 			 {
 
 				 float sr=0, sg=0, sb=0, n=0;
-				 for(int dx=0;dx<fac;dx++)
-					 for(int dy=0;dy<fac;dy++)
+				 for(int dx=0; dx<fac; ++dx)
+					 for(int dy=0; dy<fac; ++dy)
 					 {
 						 cv::Vec3b val = depth.at<cv::Vec3b>(y*fac + dy, x*fac + dx);
 
 						 sr += val[0];
 						 sg += val[1];
 						 sb += val[2];
-						 n ++;
+						 ++n;
 
 					 }
 				 depthDown.at<cv::Vec3b>(y,x) = cv::Vec3b(sr/n, sg/n, sb/n);
