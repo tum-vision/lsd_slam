@@ -25,6 +25,8 @@
 #include <string>
 #include <unordered_set>
 
+#include <boost/thread.hpp>
+
 namespace lsd_slam
 {
 
@@ -33,10 +35,11 @@ namespace Util
 {
 
 	std::unordered_set<std::string> openWindows;
-
+	boost::mutex openCVdisplayMutex;
 
 void displayImage(const char* windowName, const cv::Mat& image, bool autoSize)
 {
+	boost::unique_lock<boost::mutex> lock(openCVdisplayMutex);
 	if(!autoSize)
 	{
 		if(openWindows.find(windowName) == openWindows.end())
@@ -63,6 +66,7 @@ int waitKeyNoConsume(int milliseconds)
 
 void closeAllWindows()
 {
+	boost::unique_lock<boost::mutex> lock(openCVdisplayMutex);
 	cv::destroyAllWindows();
 	openWindows.clear();
 }
