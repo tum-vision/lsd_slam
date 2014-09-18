@@ -41,6 +41,8 @@ class FramePoseStruct;
 
 struct KFConstraintStruct
 {
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	inline KFConstraintStruct()
 	{
 		firstFrame = secondFrame = 0;
