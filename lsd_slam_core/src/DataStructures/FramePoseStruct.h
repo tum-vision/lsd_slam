@@ -29,6 +29,8 @@ namespace lsd_slam
 class Frame;
 class FramePoseStruct {
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	FramePoseStruct(Frame* frame);
 	virtual ~FramePoseStruct();
 
