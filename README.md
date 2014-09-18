@@ -165,7 +165,7 @@ This one is with no radial distortion, as a special case of ATAN camera model bu
 
 #### Calibration File for OpenCV camera model [untested!]:
 
-    fx fy cx cy d1 d2 d3 d4 d5 d6
+    fx fy cx cy d1 d2 d3 d4
     inputWidth inputHeight
     "crop" / "full" / "none" / "e1 e2 e3 e4 0"
     outputWidth outputHeight

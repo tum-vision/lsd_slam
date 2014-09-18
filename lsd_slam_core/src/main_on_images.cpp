@@ -157,6 +157,10 @@ int main( int argc, char** argv )
 
 	int w = undistorter->getOutputWidth();
 	int h = undistorter->getOutputHeight();
+
+	int w_inp = undistorter->getInputWidth();
+	int h_inp = undistorter->getInputHeight();
+
 	float fx = undistorter->getK().at<double>(0, 0);
 	float fy = undistorter->getK().at<double>(1, 1);
 	float cx = undistorter->getK().at<double>(2, 0);
@@ -219,7 +223,7 @@ int main( int argc, char** argv )
 	{
 		cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
 
-		if(imageDist.rows != h || imageDist.cols != w)
+		if(imageDist.rows != h_inp || imageDist.cols != w_inp)
 		{
 			if(imageDist.rows * imageDist.cols == 0)
 				printf("failed to load image %s! skipping.\n", files[i].c_str());
@@ -258,6 +262,9 @@ int main( int argc, char** argv )
 		}
 
 		ros::spinOnce();
+
+		if(!ros::ok())
+			break;
 	}
 
 

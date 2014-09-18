@@ -68,9 +68,9 @@ Undistorter* Undistorter::getUndistorterForFile(const char* configFilename)
 
 
 	float ic[10];
-	if(std::sscanf(l1.c_str(), "%f %f %f %f %f %f %f %f %f %f",
+	if(std::sscanf(l1.c_str(), "%f %f %f %f %f %f %f %f",
 			&ic[0], &ic[1], &ic[2], &ic[3], &ic[4],
-			&ic[5], &ic[6], &ic[7], &ic[8], &ic[9]) == 10)
+			&ic[5], &ic[6], &ic[7]) == 8)
 	{
 		printf("found OpenCV camera model, building rectifier.\n");
 		Undistorter* u = new UndistorterOpenCV(completeFileName.c_str());
@@ -428,6 +428,16 @@ int UndistorterPTAM::getOutputHeight() const
 {
 	return out_height;
 }
+int UndistorterPTAM::getInputWidth() const
+{
+	return in_width;
+}
+
+int UndistorterPTAM::getInputHeight() const
+{
+	return in_height;
+}
+
 
 bool UndistorterPTAM::isValid() const
 {
@@ -451,16 +461,16 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 	std::getline(infile,l4);
 
 	// l1 & l2
-	if(std::sscanf(l1.c_str(), "%f %f %f %f %f %f %f %f %f %f",
+	if(std::sscanf(l1.c_str(), "%f %f %f %f %f %f %f %f",
 		&inputCalibration[0], &inputCalibration[1], &inputCalibration[2], &inputCalibration[3], &inputCalibration[4],
-		&inputCalibration[5], &inputCalibration[6], &inputCalibration[7], &inputCalibration[8], &inputCalibration[9]
-  				) == 10 &&
+		&inputCalibration[5], &inputCalibration[6], &inputCalibration[7]
+  				) == 8 &&
 			std::sscanf(l2.c_str(), "%d %d", &in_width, &in_height) == 2)
 	{
 		printf("Input resolution: %d %d\n",in_width, in_height);
-		printf("In: %f %f %f %f %f %f %f %f %f %f\n",
+		printf("In: %f %f %f %f %f %f %f %f\n",
 				inputCalibration[0], inputCalibration[1], inputCalibration[2], inputCalibration[3], inputCalibration[4],
-				inputCalibration[5], inputCalibration[6], inputCalibration[7], inputCalibration[8], inputCalibration[9]);
+				inputCalibration[5], inputCalibration[6], inputCalibration[7]);
 	}
 	else
 	{
@@ -501,12 +511,10 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 		valid = false;
 	}
 	
-	cv::Mat distCoeffs = cv::Mat::zeros(8, 1, CV_32F);
-	for (int i = 0; i < 2; ++ i)
-		distCoeffs.at<float>(i, 0) = inputCalibration[4 + i];
+	cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_32F);
 	for (int i = 0; i < 4; ++ i)
-		distCoeffs.at<float>(4 + i, 0) = inputCalibration[6 + i];
-	
+		distCoeffs.at<float>(i, 0) = inputCalibration[4 + i];
+
 	originalK_ = cv::Mat(3, 3, CV_64F, cv::Scalar(0));
 	originalK_.at<double>(0, 0) = inputCalibration[0] * in_width;
 	originalK_.at<double>(1, 1) = inputCalibration[1] * in_height;
@@ -520,14 +528,6 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 		
 		cv::initUndistortRectifyMap(originalK_, distCoeffs, cv::Mat(), K_,
 				cv::Size(out_width, out_height), CV_16SC2, map1, map2);
-		
-// 		K_.at<double>(0, 0) /= out_width;
-// 		K_.at<double>(0, 2) /= out_width;
-// 		K_.at<double>(1, 1) /= out_height;
-// 		K_.at<double>(1, 2) /= out_height;
-		// TODO: PTAM code uses the following, should here also 0.5 be subtracted?
-// 		K_.at<double>(2, 0) = outputCalibration[2] * out_width - 0.5;
-// 		K_.at<double>(2, 1) = outputCalibration[3] * out_height - 0.5;
 		
 		originalK_.at<double>(0, 0) /= in_width;
 		originalK_.at<double>(0, 2) /= in_width;
@@ -566,6 +566,15 @@ int UndistorterOpenCV::getOutputWidth() const
 int UndistorterOpenCV::getOutputHeight() const
 {
 	return out_height;
+}
+int UndistorterOpenCV::getInputWidth() const
+{
+	return in_width;
+}
+
+int UndistorterOpenCV::getInputHeight() const
+{
+	return in_height;
 }
 
 bool UndistorterOpenCV::isValid() const

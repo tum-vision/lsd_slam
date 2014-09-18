@@ -59,6 +59,17 @@ public:
 	virtual int getOutputHeight() const = 0;
 	
 	/**
+	 * Returns the width of the input images in pixels.
+	 */
+	virtual int getInputWidth() const = 0;
+
+	/**
+	 * Returns the height of the input images in pixels.
+	 */
+	virtual int getInputHeight() const = 0;
+
+
+	/**
 	 * Returns if the undistorter was initialized successfully.
 	 */
 	virtual bool isValid() const = 0;
@@ -117,6 +128,17 @@ public:
 	 */
 	int getOutputHeight() const;
 	
+	/**
+	 * Returns the width of the input images in pixels.
+	 */
+	int getInputWidth() const;
+
+	/**
+	 * Returns the height of the input images in pixels.
+	 */
+	int getInputHeight() const;
+
+
 	/**
 	 * Returns if the undistorter was initialized successfully.
 	 */
@@ -186,6 +208,17 @@ public:
 	 */
 	int getOutputHeight() const;
 	
+
+	/**
+	 * Returns the width of the input images in pixels.
+	 */
+	int getInputWidth() const;
+
+	/**
+	 * Returns the height of the input images in pixels.
+	 */
+	int getInputHeight() const;
+
 	/**
 	 * Returns if the undistorter was initialized successfully.
 	 */
