@@ -30,6 +30,7 @@
 
 #include "util/settings.h"
 
+#include <Eigen/StdVector>
 
 
 namespace lsd_slam
@@ -84,7 +85,7 @@ private:
 	 * Uses FabMap internally.
 	 */
 	Frame* findAppearanceBasedCandidate(Frame* keyframe);
-	std::vector<TrackableKFStruct> findEuclideanOverlapFrames(Frame* frame, float distanceTH, float angleTH, bool checkBothScales = false);
+	std::vector<TrackableKFStruct, Eigen::aligned_allocator<TrackableKFStruct> > findEuclideanOverlapFrames(Frame* frame, float distanceTH, float angleTH, bool checkBothScales = false);
 
 #ifdef HAVE_FABMAP
 	std::unordered_map<int, Frame*> fabmapIDToKeyframe;
