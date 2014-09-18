@@ -54,7 +54,7 @@ Install system dependencies:
 In your ROS package path, clone the repository:
 
     roscd
-    git clone https://svncvpr.informatik.tu-muenchen.de/git/lsdslam-public lsd_slam
+    git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
 
 Compile the two package by typing:
 
@@ -83,7 +83,7 @@ Install system dependencies:
 In your ROS package path, clone the repository:
 
     roscd
-    git clone https://svncvpr.informatik.tu-muenchen.de/git/lsdslam-public lsd_slam
+    git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
 
 Compile the two package by typing:
 
