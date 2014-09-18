@@ -479,6 +479,8 @@ void Frame::initialize(int id, int width, int height, const Eigen::Matrix3f& K, 
 	edgeErrorSum = edgesNum = 1;
 
 	lastConstraintTrackedCamToWorld = Sim3();
+
+	isActive = false;
 }
 
 void Frame::setDepth_Allocate()
