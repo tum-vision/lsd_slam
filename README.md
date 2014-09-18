@@ -78,7 +78,7 @@ For this you need to create a rosbuild workspace (if you don't have one yet), us
 
 Install system dependencies:
 
-    sudo apt-get install ros-indigo-libg2o liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev
+    sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev
 
 In your ROS package path, clone the repository:
 
