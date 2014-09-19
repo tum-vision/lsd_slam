@@ -53,7 +53,6 @@ Install system dependencies:
 
 In your ROS package path, clone the repository:
 
-    roscd
     git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
 
 Compile the two package by typing:
@@ -75,14 +74,14 @@ For this you need to create a rosbuild workspace (if you don't have one yet), us
     rosws set ~/rosbuild_ws/package_dir -t .
     echo "source ~/rosbuild_ws/setup.bash" >> ~/.bashrc
     bash
+    cd package_dir
 
 Install system dependencies:
 
-    sudo apt-get install ros-indigo-libg2o liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev
+    sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev
 
 In your ROS package path, clone the repository:
 
-    roscd
     git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
 
 Compile the two package by typing:
