@@ -48,7 +48,8 @@ DepthMap::DepthMap(int w, int h, const Eigen::Matrix3f& K)
 	otherDepthMap = new DepthMapPixelHypothesis[width*height];
 	currentDepthMap = new DepthMapPixelHypothesis[width*height];
 
-	validityIntegralBuffer =new int[width*height];
+	validityIntegralBuffer = (int*)Eigen::internal::aligned_malloc(width*height*sizeof(int));
+
 
 
 
@@ -94,9 +95,7 @@ DepthMap::~DepthMap()
 	delete[] otherDepthMap;
 	delete[] currentDepthMap;
 
-	delete[] validityIntegralBuffer;
-
-
+	Eigen::internal::aligned_free((void*)validityIntegralBuffer);
 }
 
 
