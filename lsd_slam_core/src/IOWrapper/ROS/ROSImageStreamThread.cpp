@@ -146,10 +146,10 @@ void ROSImageStreamThread::infoCb(const sensor_msgs::CameraInfoConstPtr info)
 {
 	if(!haveCalib)
 	{
-		fx_ = info->K[0];
-		fy_ = info->K[4];
-		cx_ = info->K[2];
-		cy_ = info->K[5];
+		fx_ = info->P[0];
+		fy_ = info->P[5];
+		cx_ = info->P[2];
+		cy_ = info->P[6];
 
 		width_ = info->width;
 		height_ = info->height;
