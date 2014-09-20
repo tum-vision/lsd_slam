@@ -90,7 +90,7 @@ bool useAffineLightningEstimation = true;
 
 
 bool useFabMap = false;
-bool doSlam = true;
+bool doSlam = false;
 bool doKFReActivation = true;
 bool doMapping = true;
 

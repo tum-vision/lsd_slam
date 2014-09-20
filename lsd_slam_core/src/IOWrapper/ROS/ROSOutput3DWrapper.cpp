@@ -109,7 +109,6 @@ void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 	}
 
 	keyframe_publisher.publish(fMsg);
-	publishPose(f);
 }
 
 void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
@@ -134,6 +133,7 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 
 
 	liveframe_publisher.publish(fMsg);
+	publishPose(kf);
 }
 
 
@@ -176,7 +176,6 @@ void ROSOutput3DWrapper::publishPose(Frame* f)
 	Eigen::Vector3d pos = f->getScaledCamToWorld().translation();
 	Eigen::Quaterniond rot = f->getScaledCamToWorld().quaternion();
 
-	//TODO : check rotation and translation frames
 	pMsg.pose.position.x = pos[0];
 	pMsg.pose.position.y = pos[1];
 	pMsg.pose.position.z = pos[2];
@@ -192,8 +191,9 @@ void ROSOutput3DWrapper::publishPose(Frame* f)
 	pMsg.pose.orientation.z *= -1;
 	pMsg.pose.orientation.w *= -1;
 	}
-
-	//TODO : Add timestamped header, sequence, frame-id
+	
+	pMsg.header.stamp = ros::Time::now();
+	pMsg.header.frame_id = "world";	
 	
 	pose_publisher.publish(pMsg);
 	
