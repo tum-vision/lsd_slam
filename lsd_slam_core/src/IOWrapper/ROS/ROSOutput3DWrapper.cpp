@@ -25,6 +25,7 @@
 
 
 #include "std_msgs/Float32MultiArray.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "lsd_slam_viewer/keyframeGraphMsg.h"
 #include "lsd_slam_viewer/keyframeMsg.h"
 
@@ -54,6 +55,9 @@ ROSOutput3DWrapper::ROSOutput3DWrapper(int width, int height)
 
 	debugInfo_channel = nh_.resolveName("lsd_slam/debug");
 	debugInfo_publisher = nh_.advertise<std_msgs::Float32MultiArray>(debugInfo_channel,1);
+
+	pose_channel = nh_.resolveName("lsd_slam/pose");
+	pose_publisher = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel,1);
 
 	publishLvl=0;
 }
@@ -105,12 +109,12 @@ void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 	}
 
 	keyframe_publisher.publish(fMsg);
+	publishPose(f);
 }
 
 void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 {
 	lsd_slam_viewer::keyframeMsg fMsg;
-
 
 	fMsg.id = kf->id();
 	fMsg.time = kf->timestamp();
@@ -163,6 +167,36 @@ void ROSOutput3DWrapper::publishKeyframeGraph(KeyFrameGraph* graph)
 	graph->keyframesAllMutex.unlock_shared();
 
 	graph_publisher.publish(gMsg);
+}
+
+void ROSOutput3DWrapper::publishPose(Frame* f)
+{
+	geometry_msgs::PoseStamped pMsg;
+
+	Eigen::Vector3d pos = f->getScaledCamToWorld().translation();
+	Eigen::Quaterniond rot = f->getScaledCamToWorld().quaternion();
+
+	//TODO : check rotation and translation frames
+	pMsg.pose.position.x = pos[0];
+	pMsg.pose.position.y = pos[1];
+	pMsg.pose.position.z = pos[2];
+
+	pMsg.pose.orientation.x = rot.x();
+	pMsg.pose.orientation.y = rot.y();
+	pMsg.pose.orientation.z = rot.z();
+	pMsg.pose.orientation.w = rot.w();
+
+	if (pMsg.pose.orientation.w < 0) {
+	pMsg.pose.orientation.x *= -1;
+	pMsg.pose.orientation.y *= -1;
+	pMsg.pose.orientation.z *= -1;
+	pMsg.pose.orientation.w *= -1;
+	}
+
+	//TODO : Add timestamped header, sequence, frame-id
+	
+	pose_publisher.publish(pMsg);
+	
 }
 
 void ROSOutput3DWrapper::publishTrajectory(std::vector<Eigen::Matrix<float, 3, 1>> trajectory, std::string identifier)
