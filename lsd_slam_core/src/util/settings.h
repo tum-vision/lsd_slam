@@ -49,8 +49,8 @@ namespace lsd_slam
 
 // validity can take values between 0 and X, where X depends on the abs. gradient at that location:
 // it is calculated as VALIDITY_COUNTER_MAX + (absGrad/255)*VALIDITY_COUNTER_MAX_VARIABLE
-#define VALIDITY_COUNTER_MAX (5)		// validity will never be higher than this
-#define VALIDITY_COUNTER_MAX_VARIABLE (250)		// validity will never be higher than this
+#define VALIDITY_COUNTER_MAX (5.0f)		// validity will never be higher than this
+#define VALIDITY_COUNTER_MAX_VARIABLE (250.0f)		// validity will never be higher than this
 
 #define VALIDITY_COUNTER_INC 5		// validity is increased by this on sucessfull stereo
 #define VALIDITY_COUNTER_DEC 5		// validity is decreased by this on failed stereo
@@ -68,11 +68,11 @@ namespace lsd_slam
 
 /** ============== Depth Variance Handeling ======================= */
 #define SUCC_VAR_INC_FAC (1.01f) // before an ekf-update, the variance is increased by this factor.
-#define FAIL_VAR_INC_FAC 1.1 // after a failed stereo observation, the variance is increased by this factor.
-#define MAX_VAR (0.5*0.5) // initial variance on creation - if variance becomes larter than this, hypothesis is removed.
+#define FAIL_VAR_INC_FAC 1.1f // after a failed stereo observation, the variance is increased by this factor.
+#define MAX_VAR (0.5f*0.5f) // initial variance on creation - if variance becomes larter than this, hypothesis is removed.
 
 #define VAR_GT_INIT_INITIAL 0.01f*0.01f	// initial variance vor Ground Truth Initialization
-#define VAR_RANDOM_INIT_INITIAL (0.5*MAX_VAR)	// initial variance vor Random Initialization
+#define VAR_RANDOM_INIT_INITIAL (0.5f*MAX_VAR)	// initial variance vor Random Initialization
 
 
 
@@ -111,8 +111,8 @@ namespace lsd_slam
 #define MIN_DEPTH 0.05f // this is the minimal depth tested for stereo.
 
 // particularely important for initial pixel.
-#define MAX_EPL_LENGTH_CROP 30 // maximum length of epl to search.
-#define MIN_EPL_LENGTH_CROP (3) // minimum length of epl to search.
+#define MAX_EPL_LENGTH_CROP 30.0f // maximum length of epl to search.
+#define MIN_EPL_LENGTH_CROP (3.0f) // minimum length of epl to search.
 
 // this is the distance of the sample points used for the stereo descriptor.
 #define GRADIENT_SAMPLE_DIST 1.0f
@@ -121,7 +121,7 @@ namespace lsd_slam
 #define SAMPLE_POINT_TO_BORDER 7
 
 // pixels with too big an error are definitely thrown out.
-#define MAX_ERROR_STEREO (1300) // maximal photometric error for stereo to be successful (sum over 5 squared intensity differences)
+#define MAX_ERROR_STEREO (1300.0f) // maximal photometric error for stereo to be successful (sum over 5 squared intensity differences)
 #define MIN_DISTANCE_ERROR_STEREO (1.5f) // minimal multiplicative difference to second-best match to not be considered ambiguous.
 
 // defines how large the stereo-search region is. it is [mean] +/- [std.dev]*STEREO_EPL_VAR_FAC
@@ -134,7 +134,7 @@ namespace lsd_slam
 // distance factor for regularization.
 // is used as assumed inverse depth variance between neighbouring pixel.
 // basically determines the amount of spacial smoothing (small -> more smoothing).
-#define REG_DIST_VAR (0.075*0.075*depthSmoothingFactor*depthSmoothingFactor)
+#define REG_DIST_VAR (0.075f*0.075f*depthSmoothingFactor*depthSmoothingFactor)
 
 // define how strict the merge-processes etc. are.
 // are multiplied onto the difference, so the larger, the more restrictive.
@@ -147,8 +147,8 @@ namespace lsd_slam
 
 
 // ============== initial stereo pixel selection ======================
-#define MIN_EPL_GRAD_SQUARED (2*2)
-#define MIN_EPL_LENGTH_SQUARED (1*1)
+#define MIN_EPL_GRAD_SQUARED (2.0f*2.0f)
+#define MIN_EPL_LENGTH_SQUARED (1.0f*1.0f)
 #define MIN_EPL_ANGLE_SQUARED (0.3f*0.3f)
 
 // abs. grad at that location needs to be larger than this.
@@ -160,12 +160,12 @@ namespace lsd_slam
 
 
 
-#define MAX_DIFF_CONSTANT (40*40)
-#define MAX_DIFF_GRAD_MULT (0.5*0.5)
+#define MAX_DIFF_CONSTANT (40.0f*40.0f)
+#define MAX_DIFF_GRAD_MULT (0.5f*0.5f)
 
-#define MIN_GOODPERGOODBAD_PIXEL (0.5)
-#define MIN_GOODPERALL_PIXEL (0.04)
-#define MIN_GOODPERALL_PIXEL_ABSMIN (0.01)
+#define MIN_GOODPERGOODBAD_PIXEL (0.5f)
+#define MIN_GOODPERALL_PIXEL (0.04f)
+#define MIN_GOODPERALL_PIXEL_ABSMIN (0.01f)
 
 #define INITIALIZATION_PHASE_COUNT 5
 

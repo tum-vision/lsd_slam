@@ -563,7 +563,7 @@ void DepthMap::propagateDepth(Frame* new_keyframe)
 				float residual = destColor - sourceColor;
 
 
-				if(residual*residual / (MAX_DIFF_CONSTANT + MAX_DIFF_GRAD_MULT*destAbsGrad*destAbsGrad) > 1 || destAbsGrad < MIN_ABS_GRAD_DECREASE)
+				if(residual*residual / (MAX_DIFF_CONSTANT + MAX_DIFF_GRAD_MULT*destAbsGrad*destAbsGrad) > 1.0f || destAbsGrad < MIN_ABS_GRAD_DECREASE)
 				{
 					if(enablePrintDebugInfo) runningStats.num_prop_removed_colorDiff++;
 					continue;
@@ -620,7 +620,7 @@ void DepthMap::propagateDepth(Frame* new_keyframe)
 
 				// merge idepth ekf-style
 				float w = new_var / (targetBest->idepth_var + new_var);
-				float merged_new_idepth = w*targetBest->idepth + (1-w)*new_idepth;
+				float merged_new_idepth = w*targetBest->idepth + (1.0f-w)*new_idepth;
 
 				// merge validity
 				int merged_validity = source->validity_counter + targetBest->validity_counter;
@@ -1450,7 +1450,7 @@ inline float DepthMap::doLineStereo(
 	if(enablePrintDebugInfo) stats->num_stereo_calls++;
 
 	// calculate epipolar line start and end point in old image
-	Eigen::Vector3f KinvP = Eigen::Vector3f(fxi*u+cxi,fyi*v+cyi,1);
+	Eigen::Vector3f KinvP = Eigen::Vector3f(fxi*u+cxi,fyi*v+cyi,1.0f);
 	Eigen::Vector3f pInf = referenceFrame->K_otherToThis_R * KinvP;
 	Eigen::Vector3f pReal = pInf / prior_idepth + referenceFrame->K_otherToThis_t;
 
@@ -1489,9 +1489,9 @@ inline float DepthMap::doLineStereo(
 	Eigen::Vector3f pClose = pInf + referenceFrame->K_otherToThis_t*max_idepth;
 	// if the assumed close-point lies behind the
 	// image, have to change that.
-	if(pClose[2] < 0.001)
+	if(pClose[2] < 0.001f)
 	{
-		max_idepth = (0.001-pInf[2]) / referenceFrame->K_otherToThis_t[2];
+		max_idepth = (0.001f-pInf[2]) / referenceFrame->K_otherToThis_t[2];
 		pClose = pInf + referenceFrame->K_otherToThis_t*max_idepth;
 	}
 	pClose = pClose / pClose[2]; // pos in new image of point (xy), assuming max_idepth
@@ -1499,7 +1499,7 @@ inline float DepthMap::doLineStereo(
 	Eigen::Vector3f pFar = pInf + referenceFrame->K_otherToThis_t*min_idepth;
 	// if the assumed far-point lies behind the image or closter than the near-point,
 	// we moved past the Point it and should stop.
-	if(pFar[2] < 0.001 || max_idepth < min_idepth)
+	if(pFar[2] < 0.001f || max_idepth < min_idepth)
 	{
 		if(enablePrintDebugInfo) stats->num_stereo_inf_oob++;
 		return -1;
@@ -1538,7 +1538,7 @@ inline float DepthMap::doLineStereo(
 	// make epl long enough (pad a little bit).
 	if(eplLength < MIN_EPL_LENGTH_CROP)
 	{
-		float pad = (MIN_EPL_LENGTH_CROP - (eplLength)) / 2;
+		float pad = (MIN_EPL_LENGTH_CROP - (eplLength)) / 2.0f;
 		pFar[0] -= incx*pad;
 		pFar[1] -= incy*pad;
 
@@ -1603,7 +1603,7 @@ inline float DepthMap::doLineStereo(
 				pClose[0] >= width-SAMPLE_POINT_TO_BORDER ||
 				pClose[1] <= SAMPLE_POINT_TO_BORDER ||
 				pClose[1] >= height-SAMPLE_POINT_TO_BORDER ||
-				newEplLength < 8
+				newEplLength < 8.0f
 				)
 		{
 			if(enablePrintDebugInfo) stats->num_stereo_near_oob++;
@@ -1624,7 +1624,7 @@ inline float DepthMap::doLineStereo(
 	float cpx = pFar[0];
 	float cpy =  pFar[1];
 
-	float val_cp_m2 = getInterpolatedElement(referenceFrameImage,cpx-2*incx, cpy-2*incy, width);
+	float val_cp_m2 = getInterpolatedElement(referenceFrameImage,cpx-2.0f*incx, cpy-2.0f*incy, width);
 	float val_cp_m1 = getInterpolatedElement(referenceFrameImage,cpx-incx, cpy-incy, width);
 	float val_cp = getInterpolatedElement(referenceFrameImage,cpx, cpy, width);
 	float val_cp_p1 = getInterpolatedElement(referenceFrameImage,cpx+incx, cpy+incy, width);
@@ -1751,7 +1751,7 @@ inline float DepthMap::doLineStereo(
 	}
 
 	// if error too big, will return -3, otherwise -2.
-	if(best_match_err > 4*(float)MAX_ERROR_STEREO)
+	if(best_match_err > 4.0f*(float)MAX_ERROR_STEREO)
 	{
 		if(enablePrintDebugInfo) stats->num_stereo_invalid_bigErr++;
 		return -3;
@@ -1759,7 +1759,7 @@ inline float DepthMap::doLineStereo(
 
 
 	// check if clear enough winner
-	if(abs(loopCBest - loopCSecond) > 1 && MIN_DISTANCE_ERROR_STEREO * best_match_err > second_best_match_err)
+	if(abs(loopCBest - loopCSecond) > 1.0f && MIN_DISTANCE_ERROR_STEREO * best_match_err > second_best_match_err)
 	{
 		if(enablePrintDebugInfo) stats->num_stereo_invalid_unclear_winner++;
 		return -2;
@@ -1914,9 +1914,9 @@ inline float DepthMap::doLineStereo(
 	// ================= calc var (in NEW image) ====================
 
 	// calculate error from photometric noise
-	float photoDispError = 4 * cameraPixelNoise2 / (gradAlongLine + DIVISION_EPS);
+	float photoDispError = 4.0f * cameraPixelNoise2 / (gradAlongLine + DIVISION_EPS);
 
-	float trackingErrorFac = 0.25*(1+referenceFrame->initialTrackedResidual);
+	float trackingErrorFac = 0.25f*(1.0f+referenceFrame->initialTrackedResidual);
 
 	// calculate error from geometric noise (wrong camera pose / calibration)
 	Eigen::Vector2f gradsInterp = getInterpolatedElement42(activeKeyFrame->gradients(0), u, v, width);
