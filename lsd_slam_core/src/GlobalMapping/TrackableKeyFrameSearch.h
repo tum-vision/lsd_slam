@@ -58,6 +58,8 @@ struct TrackableKFStruct
 class TrackableKeyFrameSearch
 {
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	/** Constructor. */
 	TrackableKeyFrameSearch(KeyFrameGraph* graph, int w, int h, Eigen::Matrix3f K);
 	~TrackableKeyFrameSearch();
