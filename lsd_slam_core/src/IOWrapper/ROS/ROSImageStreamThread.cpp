@@ -127,7 +127,10 @@ void ROSImageStreamThread::vidCb(const sensor_msgs::ImageConstPtr img)
 	lastSEQ = img->header.seq;
 
 	TimestampedMat bufferItem;
-	bufferItem.timestamp = Timestamp::now(); // TODO: should use time of img object, but should be consistent with other timestamps
+	if(img->header.stamp.toSec() != 0)
+		bufferItem.timestamp =  Timestamp(img->header.stamp.toSec());
+	else
+		bufferItem.timestamp =  Timestamp(ros::Time::now().toSec());
 
 	if(undistorter != 0)
 	{

@@ -34,10 +34,17 @@ boost::mutex Timestamp::localtimeMutex;
 
 Timestamp::Timestamp()
 {
+	externalStamp = 0;
+}
+
+Timestamp::Timestamp(double seconds)
+{
+	externalStamp = seconds;
 }
 
 double Timestamp::toSec() const
 {
+	if(externalStamp!=0) return externalStamp;
 	return std::chrono::duration<double>(timePoint - startupTimePoint).count();
 }
 

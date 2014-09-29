@@ -51,6 +51,7 @@ public:
 	 * Creates an uninitialized timestamp.
 	 */
 	Timestamp();
+	Timestamp(double seconds);
 	
 	/**
 	 * Returns the timestamp as the time in seconds which has passed since the
@@ -79,6 +80,8 @@ private:
 	
 	static const std::chrono::monotonic_clock::time_point startupTimePoint;
 	static boost::mutex localtimeMutex;
+
+	double externalStamp;
 };
 }
 #endif
