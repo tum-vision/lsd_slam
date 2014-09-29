@@ -163,6 +163,9 @@ SlamSystem::~SlamSystem()
 	delete keyFrameGraph;
 
 	FrameMemory::getInstance().releaseBuffes();
+
+
+	Util::closeAllWindows();
 }
 
 void SlamSystem::setVisualization(Output3DWrapper* outputWrapper)

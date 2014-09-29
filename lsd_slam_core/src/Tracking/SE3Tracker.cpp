@@ -449,7 +449,7 @@ SE3 SE3Tracker::trackFrame(
 
 
 	if(plotTracking)
-		cv::imshow("TrackingResidual", debugImageResiduals);
+		Util::displayImage("TrackingResidual", debugImageResiduals, false);
 
 
 	if(enablePrintDebugInfo && printTrackingIterationInfo)

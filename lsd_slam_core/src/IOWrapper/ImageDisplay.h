@@ -30,6 +30,14 @@ namespace lsd_slam
 namespace Util
 {
 
+	struct DisplayImageObect
+	{
+		cv::Mat img;
+		std::string name;
+		bool autoSize;
+	};
+
+
 /// Image display function working on different platforms.
 /// On Android, the window name is ignored as all images are output fullscreen.
 void displayImage(const char* windowName, const cv::Mat& image, bool autoSize = true);
