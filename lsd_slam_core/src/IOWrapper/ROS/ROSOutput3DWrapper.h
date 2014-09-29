@@ -92,9 +92,12 @@ private:
 	std::string graph_channel;
 	ros::Publisher graph_publisher;
 
-
 	std::string debugInfo_channel;
 	ros::Publisher debugInfo_publisher;
+
+
+	std::string pose_channel;
+	ros::Publisher pose_publisher;
 
 	ros::NodeHandle nh_;
 };

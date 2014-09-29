@@ -31,7 +31,7 @@
 #include "DataStructures/Frame.h"
 #include "GlobalMapping/KeyFrameGraph.h"
 #include "sophus/sim3.hpp"
-
+#include "geometry_msgs/PoseStamped.h"
 #include "GlobalMapping/g2oTypeSim3Sophus.h"
 
 namespace lsd_slam
@@ -54,6 +54,10 @@ ROSOutput3DWrapper::ROSOutput3DWrapper(int width, int height)
 
 	debugInfo_channel = nh_.resolveName("lsd_slam/debug");
 	debugInfo_publisher = nh_.advertise<std_msgs::Float32MultiArray>(debugInfo_channel,1);
+
+	pose_channel = nh_.resolveName("lsd_slam/pose");
+	pose_publisher = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel,1);
+
 
 	publishLvl=0;
 }
@@ -125,11 +129,34 @@ void ROSOutput3DWrapper::publishTrackedFrame(Frame* kf)
 	fMsg.width = kf->width(publishLvl);
 	fMsg.height = kf->height(publishLvl);
 
-
 	fMsg.pointcloud.clear();
 
-
 	liveframe_publisher.publish(fMsg);
+
+
+	SE3 camToWorld = se3FromSim3(kf->getScaledCamToWorld());
+
+	geometry_msgs::PoseStamped pMsg;
+
+	pMsg.pose.position.x = camToWorld.translation()[0];
+	pMsg.pose.position.y = camToWorld.translation()[1];
+	pMsg.pose.position.z = camToWorld.translation()[2];
+	pMsg.pose.orientation.x = camToWorld.so3().unit_quaternion().x();
+	pMsg.pose.orientation.y = camToWorld.so3().unit_quaternion().y();
+	pMsg.pose.orientation.z = camToWorld.so3().unit_quaternion().z();
+	pMsg.pose.orientation.w = camToWorld.so3().unit_quaternion().w();
+
+	if (pMsg.pose.orientation.w < 0)
+	{
+		pMsg.pose.orientation.x *= -1;
+		pMsg.pose.orientation.y *= -1;
+		pMsg.pose.orientation.z *= -1;
+		pMsg.pose.orientation.w *= -1;
+	}
+
+	pMsg.header.stamp = ros::Time(kf->timestamp());
+	pMsg.header.frame_id = "world";
+	pose_publisher.publish(pMsg);
 }
 
 
