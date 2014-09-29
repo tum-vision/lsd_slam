@@ -77,6 +77,8 @@ public:
 
 	virtual void publishDebugInfo(Eigen::Matrix<float, 20, 1> data);
 
+	virtual void publishPose(Frame* f);
+
 
 	int publishLvl;
 	
@@ -92,6 +94,8 @@ private:
 	std::string graph_channel;
 	ros::Publisher graph_publisher;
 
+	std::string pose_channel;
+	ros::Publisher pose_publisher;
 
 	std::string debugInfo_channel;
 	ros::Publisher debugInfo_publisher;
