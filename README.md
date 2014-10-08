@@ -196,7 +196,7 @@ or (for ROS indigo)
     rosrun rqt_reconfigure rqt_reconfigure
 
 Parameters are split into two parts, ones that enable / disable various sorts of debug output in `/LSD_SLAM/Debug`, and ones that affect the actual algorithm, in `/LSD_SLAM`.
-
+Note that debug output options from `/LSD_SLAM/Debug` only work if lsd\_slam\_core is built with debug info, e.g. with `set(ROS_BUILD_TYPE RelWithDebInfo)`. 
 
 * `minUseGrad`: [double] Minimal absolute image gradient for a pixel to be used at all. Increase if your camera has large image noise, decrease if you have low image-noise and want to also exploit small gradients.
 * `cameraPixelNoise`: [double] Image intensity noise used for e.g. tracking weight calculation. Should be set larger than the actual sensor-noise, to also account for noise originating from discretization / linear interpolation.
