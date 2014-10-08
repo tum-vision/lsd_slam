@@ -111,7 +111,7 @@ We suggest to use the [2.4.8](https://github.com/Itseez/opencv/releases/tag/2.4.
 
 # 3 Usage
 LSD-SLAM is split into two ROS packages, `lsd_slam_core` and `lsd_slam_viewer`. `lsd_slam_core` contains the full SLAM system, whereas `lsd_slam_viewer` is optionally used for 3D visualization.
-Please also read **Genenral Notes for good results** below.
+Please also read **General Notes for good results** below.
 
 ## 3.1 `lsd_slam_core`
 We provide two different usage modes, one meant for live-operation (`live_slam`) using ROS input/output, and one `dataset_slam` to use on datasets in the form of image files.
@@ -136,7 +136,7 @@ In this case, the camera_info topic is ignored, and images may also be radially 
 
 Here, `<files>` can either be a folder containing image files (which will be sorted alphabetically), or a text file containing one image file per line. `<hz>` is the framerate at which the images are processed, and `<calibration_file>` the camera calibration file. 
 
-Specify `_hz:=0` to sequentialize tracking and mapping, i.e. make sure that every frame is mapped properly. Note that while this typically will give best results, it can be much slower than real-time operation.
+Specify `_hz:=0` to enable sequential tracking and mapping, i.e. make sure that every frame is mapped properly. Note that while this typically will give best results, it can be much slower than real-time operation.
 
 
 ### 3.1.3 Camera Calibration
@@ -180,7 +180,7 @@ This one is with no radial distortion, as a special case of ATAN camera model bu
 
 - `m`: Save current state of the map (depth & variance) as images to `lsd_slam_core/save/`
 
-- `p`: Brute-Force-Try to find new constraints. May improove the map by finding more constraints, but will block mapping for a while. 
+- `p`: Brute-Force-Try to find new constraints. May improve the map by finding more constraints, but will block mapping for a while. 
 
 - `l`: Manually indicate that tracking is lost: will stop tracking and mapping, and start the re-localizer.
 
@@ -198,7 +198,7 @@ or (for ROS indigo)
 Parameters are split into two parts, ones that enable / disable various sorts of debug output in `/LSD_SLAM/Debug`, and ones that affect the actual algorithm, in `/LSD_SLAM`.
 
 
-* `minUseGrad`: [double] Minimal absolut image gradient for a pixel to be used at all. Increase if your camera has large image noise, decrease if you have low image-noise and want to also exploit small gradients.
+* `minUseGrad`: [double] Minimal absolute image gradient for a pixel to be used at all. Increase if your camera has large image noise, decrease if you have low image-noise and want to also exploit small gradients.
 * `cameraPixelNoise`: [double] Image intensity noise used for e.g. tracking weight calculation. Should be set larger than the actual sensor-noise, to also account for noise originating from discretization / linear interpolation.
 * `KFUsageWeight`: [double] Determines how often keyframes are taken, depending on the overlap to the current keyframe. Larger -> more keyframes.
 * `KFDistWeight`: [double] Determines how often keyframes are taken, depending on the distance to the current Keyframe. Larger -> more keyframes.
@@ -220,7 +220,7 @@ Useful for debug output are:
 
 * `plotStereoImages`: [bool] Plot searched stereo lines, and color-coded stereo-results. Nice visualization of what's going on, however drastically decreases mapping speed.
 * `plotTracking`: [bool] Plot final tracking residual. Nice visualization of what's going on, however drastically decreases tracking speed.
-* `continuousPCOutput`: [bool] Publish current keyframe's point cloud after each update, to be seen in the viewer. Nice visualization, however bad for performance and bandwith.
+* `continuousPCOutput`: [bool] Publish current keyframe's point cloud after each update, to be seen in the viewer. Nice visualization, however bad for performance and bandwidth.
 
 
 
