@@ -103,7 +103,6 @@ SE3Tracker::~SE3Tracker()
 
 
 	Eigen::internal::aligned_free((void*)buf_warped_residual);
-	Eigen::internal::aligned_free((void*)buf_warped_residual);
 	Eigen::internal::aligned_free((void*)buf_warped_dx);
 	Eigen::internal::aligned_free((void*)buf_warped_dy);
 	Eigen::internal::aligned_free((void*)buf_warped_x);
