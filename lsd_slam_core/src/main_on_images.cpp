@@ -34,7 +34,6 @@
 #include "IOWrapper/ROS/rosReconfigure.h"
 
 #include "util/Undistorter.h"
-#include <ros/package.h>
 
 #include "opencv2/opencv.hpp"
 
@@ -123,37 +122,25 @@ int getFile (std::string source, std::vector<std::string> &files)
 
 }
 
-
 using namespace lsd_slam;
 int main( int argc, char** argv )
 {
-	ros::init(argc, argv, "LSD_SLAM");
-
-	dynamic_reconfigure::Server<lsd_slam_core::LSDParamsConfig> srv(ros::NodeHandle("~"));
-	srv.setCallback(dynConfCb);
-
-	dynamic_reconfigure::Server<lsd_slam_core::LSDDebugParamsConfig> srvDebug(ros::NodeHandle("~Debug"));
-	srvDebug.setCallback(dynConfCbDebug);
-
-	packagePath = ros::package::getPath("lsd_slam_core")+"/";
-
-
-
 	// get camera calibration in form of an undistorter object.
 	// if no undistortion is required, the undistorter will just pass images through.
 	std::string calibFile;
 	Undistorter* undistorter = 0;
-	if(ros::param::get("~calib", calibFile))
-	{
-		 undistorter = Undistorter::getUndistorterForFile(calibFile.c_str());
-		 ros::param::del("~calib");
-	}
-
-	if(undistorter == 0)
-	{
-		printf("need camera calibration file! (set using _calib:=FILE)\n");
-		exit(0);
-	}
+	//FIXME
+//	if(ros::param::get("~calib", calibFile))
+//	{
+//		 undistorter = Undistorter::getUndistorterForFile(calibFile.c_str());
+//		 ros::param::del("~calib");
+//	}
+//
+//	if(undistorter == 0)
+//	{
+//		printf("need camera calibration file! (set using _calib:=FILE)\n");
+//		exit(0);
+//	}
 
 	int w = undistorter->getOutputWidth();
 	int h = undistorter->getOutputHeight();
@@ -170,7 +157,8 @@ int main( int argc, char** argv )
 
 
 	// make output wrapper. just set to zero if no output is required.
-	Output3DWrapper* outputWrapper = new ROSOutput3DWrapper(w,h);
+	//FIXME
+	Output3DWrapper* outputWrapper = 0;//new ROSOutput3DWrapper(w,h);
 
 
 	// make slam system
@@ -182,12 +170,13 @@ int main( int argc, char** argv )
 	// open image files: first try to open as file.
 	std::string source;
 	std::vector<std::string> files;
-	if(!ros::param::get("~files", source))
-	{
-		printf("need source files! (set using _files:=FOLDER)\n");
-		exit(0);
-	}
-	ros::param::del("~files");
+	//FIXME
+//	if(!ros::param::get("~files", source))
+//	{
+//		printf("need source files! (set using _files:=FOLDER)\n");
+//		exit(0);
+//	}
+//	ros::param::del("~files");
 
 
 	if(getdir(source, files) >= 0)
@@ -206,18 +195,11 @@ int main( int argc, char** argv )
 
 
 	// get HZ
-	double hz = 0;
-	if(!ros::param::get("~hz", hz))
-		hz = 0;
-	ros::param::del("~hz");
-
-
+	double hz = 30;
 
 	cv::Mat image = cv::Mat(h,w,CV_8U);
 	int runningIDX=0;
 	float fakeTimeStamp = 0;
-
-	ros::Rate r(hz);
 
 	for(unsigned int i=0;i<files.size();i++)
 	{
@@ -241,16 +223,12 @@ int main( int argc, char** argv )
 		if(runningIDX == 0)
 			system->randomInit(image.data, fakeTimeStamp, runningIDX);
 		else
-			system->trackFrame(image.data, runningIDX ,hz == 0,fakeTimeStamp);
+			system->trackFrame(image.data, runningIDX, hz == 0, fakeTimeStamp);
 		runningIDX++;
 		fakeTimeStamp+=0.03;
 
-		if(hz != 0)
-			r.sleep();
-
 		if(fullResetRequested)
 		{
-
 			printf("FULL RESET!\n");
 			delete system;
 
@@ -260,17 +238,9 @@ int main( int argc, char** argv )
 			fullResetRequested = false;
 			runningIDX = 0;
 		}
-
-		ros::spinOnce();
-
-		if(!ros::ok())
-			break;
 	}
 
-
 	system->finalize();
-
-
 
 	delete system;
 	delete undistorter;

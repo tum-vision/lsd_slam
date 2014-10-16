@@ -20,9 +20,7 @@
 
 #pragma once
 
-#include <ros/ros.h>
 #include "IOWrapper/Output3DWrapper.h"
-
 
 namespace lsd_slam
 {
@@ -82,23 +80,5 @@ public:
 	
 private:
 	int width, height;
-
-	std::string liveframe_channel;
-	ros::Publisher liveframe_publisher;
-
-	std::string keyframe_channel;
-	ros::Publisher keyframe_publisher;
-
-	std::string graph_channel;
-	ros::Publisher graph_publisher;
-
-	std::string debugInfo_channel;
-	ros::Publisher debugInfo_publisher;
-
-
-	std::string pose_channel;
-	ros::Publisher pose_publisher;
-
-	ros::NodeHandle nh_;
 };
 }

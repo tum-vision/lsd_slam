@@ -24,15 +24,7 @@
 #include "IOWrapper/TimestampedObject.h"
 #include "IOWrapper/InputImageStream.h"
 
-#include <ros/ros.h>
-#include <ros/package.h>
-#include <sensor_msgs/image_encodings.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
-#include <geometry_msgs/PoseStamped.h>
-
 #include "util/Undistorter.h"
-
 
 namespace lsd_slam
 {
@@ -68,11 +60,6 @@ private:
 
 	bool haveCalib;
 	Undistorter* undistorter;
-
-	ros::NodeHandle nh_;
-
-	std::string vid_channel;
-	ros::Subscriber vid_sub;
 
 	int lastSEQ;
 };
