@@ -192,11 +192,6 @@ void SlamSystem::mergeOptimizationOffset()
 
 	poseConsistencyMutex.unlock();
 
-
-
-
-
-
 	if(needPublish)
 		publishKeyframeGraph();
 }
