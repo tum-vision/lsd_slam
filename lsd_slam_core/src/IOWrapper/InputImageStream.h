@@ -29,7 +29,7 @@ namespace lsd_slam
 {
 
 /**
- * Virtual ImageStream. Can be from OpenCV's ImageCapture, ROS or Android.
+ * Virtual ImageStream. Can be from OpenCV's ImageCapture, or Android.
  * Also has to provide the camera calibration for that stream, as well as the respective undistorter object (if required).
  * Runs in it's own thread, and has a NotifyBuffer, in which received images are stored.
  */

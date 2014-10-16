@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 find_package(OpenCV REQUIRED)
 find_package(Boost COMPONENTS thread filesystem system REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(Pangolin 0.1 REQUIRED)
 find_package(SuiteParse REQUIRED) # Apparently needed by g2o
 
 # FabMap
@@ -58,6 +59,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}
   ${OpenCV_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
+  ${Pangolin_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
   ${CSPARSE_INCLUDE_DIR} #Has been set by SuiteParse
   ${CHOLMOD_INCLUDE_DIR} #Has been set by SuiteParse
@@ -68,6 +70,6 @@ add_library(lsdslam SHARED ${SOURCE_FILES})
 target_link_libraries(lsdslam ${FABMAP_LIB} ${Boost_LIBRARIES} ${OpenCV_LIBS} g2o_core g2o_stuff csparse cxsparse g2o_solver_csparse g2o_csparse_extension g2o_types_sim3 g2o_types_sba)
 
 # build image node
-add_executable(dataset main_on_images.cpp)
-target_link_libraries(dataset lsdslam)
+add_executable(LSD LSD.cpp)
+target_link_libraries(LSD lsdslam ${Pangolin_LIBRARIES})
 

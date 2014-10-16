@@ -31,12 +31,11 @@
 #include <dirent.h>
 #include <algorithm>
 
-#include "IOWrapper/ROS/ROSOutput3DWrapper.h"
-#include "IOWrapper/ROS/rosReconfigure.h"
-
 #include "util/Undistorter.h"
 
 #include "opencv2/opencv.hpp"
+
+#include "GUI.h"
 
 std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -155,10 +154,14 @@ int main( int argc, char** argv )
 	Sophus::Matrix3f K;
 	K << fx, 0.0, cx, 0.0, fy, cy, 0.0, 0.0, 1.0;
 
+	Resolution::getInstance(w, h);
+	Intrinsics::getInstance(fx, fy, cx, cy);
+
+	GUI gui;
 
 	// make output wrapper. just set to zero if no output is required.
 	//FIXME
-	Output3DWrapper* outputWrapper = 0;//new ROSOutput3DWrapper(w,h);
+	Output3DWrapper* outputWrapper = 0;
 
 	// make slam system
 	SlamSystem* system = new SlamSystem(w, h, K, doSlam);
@@ -193,7 +196,7 @@ int main( int argc, char** argv )
 	int runningIDX=0;
 	float fakeTimeStamp = 0;
 
-	for(unsigned int i=0;i<files.size();i++)
+	for(unsigned int i = 0; i < files.size(); i++)
 	{
 		cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
 
