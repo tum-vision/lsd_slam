@@ -22,6 +22,7 @@
 
 #include <boost/thread.hpp>
 #include "util/settings.h"
+#include "util/Parse.h"
 #include "util/globalFuncs.h"
 #include "SlamSystem.h"
 
@@ -129,18 +130,17 @@ int main( int argc, char** argv )
 	// if no undistortion is required, the undistorter will just pass images through.
 	std::string calibFile;
 	Undistorter* undistorter = 0;
-	//FIXME
-//	if(ros::param::get("~calib", calibFile))
-//	{
-//		 undistorter = Undistorter::getUndistorterForFile(calibFile.c_str());
-//		 ros::param::del("~calib");
-//	}
-//
-//	if(undistorter == 0)
-//	{
-//		printf("need camera calibration file! (set using _calib:=FILE)\n");
-//		exit(0);
-//	}
+
+	if(Parse::arg(argc, argv, "-c", calibFile) > 0)
+	{
+		 undistorter = Undistorter::getUndistorterForFile(calibFile.c_str());
+	}
+
+	if(undistorter == 0)
+	{
+		printf("need camera calibration file! (set using -c FILE)\n");
+		exit(0);
+	}
 
 	int w = undistorter->getOutputWidth();
 	int h = undistorter->getOutputHeight();
@@ -160,25 +160,19 @@ int main( int argc, char** argv )
 	//FIXME
 	Output3DWrapper* outputWrapper = 0;//new ROSOutput3DWrapper(w,h);
 
-
 	// make slam system
 	SlamSystem* system = new SlamSystem(w, h, K, doSlam);
 	system->setVisualization(outputWrapper);
 
-
-
 	// open image files: first try to open as file.
 	std::string source;
+	if(!(Parse::arg(argc, argv, "-f", source) > 0))
+	{
+		printf("need source files! (set using -f FOLDER)\n");
+		exit(0);
+	}
+
 	std::vector<std::string> files;
-	//FIXME
-//	if(!ros::param::get("~files", source))
-//	{
-//		printf("need source files! (set using _files:=FOLDER)\n");
-//		exit(0);
-//	}
-//	ros::param::del("~files");
-
-
 	if(getdir(source, files) >= 0)
 	{
 		printf("found %d image files in folder %s!\n", (int)files.size(), source.c_str());
@@ -191,8 +185,6 @@ int main( int argc, char** argv )
 	{
 		printf("could not load file list! wrong path / file?\n");
 	}
-
-
 
 	// get HZ
 	double hz = 30;
@@ -226,6 +218,8 @@ int main( int argc, char** argv )
 			system->trackFrame(image.data, runningIDX, hz == 0, fakeTimeStamp);
 		runningIDX++;
 		fakeTimeStamp+=0.03;
+
+		usleep(30000);
 
 		if(fullResetRequested)
 		{
