@@ -24,6 +24,8 @@
 #include "util/settings.h"
 #include "util/Parse.h"
 #include "util/globalFuncs.h"
+#include "util/ThreadMutexObject.h"
+#include "IOWrapper/Pangolin/PangolinOutput3DWrapper.h"
 #include "SlamSystem.h"
 
 #include <sstream>
@@ -36,6 +38,10 @@
 #include "opencv2/opencv.hpp"
 
 #include "GUI.h"
+
+std::vector<std::string> files;
+int w, h, w_inp, h_inp;
+ThreadMutexObject<bool> lsdDone(false);
 
 std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -123,6 +129,58 @@ int getFile (std::string source, std::vector<std::string> &files)
 }
 
 using namespace lsd_slam;
+
+void run(SlamSystem * system, Undistorter* undistorter, Output3DWrapper* outputWrapper, Sophus::Matrix3f K)
+{
+    // get HZ
+    double hz = 30;
+
+    cv::Mat image = cv::Mat(h, w, CV_8U);
+    int runningIDX=0;
+    float fakeTimeStamp = 0;
+
+    for(unsigned int i = 0; i < files.size(); i++)
+    {
+        cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
+
+        if(imageDist.rows != h_inp || imageDist.cols != w_inp)
+        {
+            if(imageDist.rows * imageDist.cols == 0)
+                printf("failed to load image %s! skipping.\n", files[i].c_str());
+            else
+                printf("image %s has wrong dimensions - expecting %d x %d, found %d x %d. Skipping.\n",
+                        files[i].c_str(),
+                        w,h,imageDist.cols, imageDist.rows);
+            continue;
+        }
+        assert(imageDist.type() == CV_8U);
+
+        undistorter->undistort(imageDist, image);
+        assert(image.type() == CV_8U);
+
+        if(runningIDX == 0)
+            system->randomInit(image.data, fakeTimeStamp, runningIDX);
+        else
+            system->trackFrame(image.data, runningIDX, hz == 0, fakeTimeStamp);
+        runningIDX++;
+        fakeTimeStamp+=0.03;
+
+        if(fullResetRequested)
+        {
+            printf("FULL RESET!\n");
+            delete system;
+
+            system = new SlamSystem(w, h, K, doSlam);
+            system->setVisualization(outputWrapper);
+
+            fullResetRequested = false;
+            runningIDX = 0;
+        }
+    }
+
+    lsdDone.assignValue(true);
+}
+
 int main( int argc, char** argv )
 {
 	// get camera calibration in form of an undistorter object.
@@ -141,11 +199,11 @@ int main( int argc, char** argv )
 		exit(0);
 	}
 
-	int w = undistorter->getOutputWidth();
-	int h = undistorter->getOutputHeight();
+	w = undistorter->getOutputWidth();
+	h = undistorter->getOutputHeight();
 
-	int w_inp = undistorter->getInputWidth();
-	int h_inp = undistorter->getInputHeight();
+	w_inp = undistorter->getInputWidth();
+	h_inp = undistorter->getInputHeight();
 
 	float fx = undistorter->getK().at<double>(0, 0);
 	float fy = undistorter->getK().at<double>(1, 1);
@@ -159,12 +217,10 @@ int main( int argc, char** argv )
 
 	GUI gui;
 
-	// make output wrapper. just set to zero if no output is required.
-	//FIXME
-	Output3DWrapper* outputWrapper = 0;
+	Output3DWrapper* outputWrapper = new PangolinOutput3DWrapper(w, h);
 
 	// make slam system
-	SlamSystem* system = new SlamSystem(w, h, K, doSlam);
+	SlamSystem * system = new SlamSystem(w, h, K, doSlam);
 	system->setVisualization(outputWrapper);
 
 	// open image files: first try to open as file.
@@ -175,7 +231,6 @@ int main( int argc, char** argv )
 		exit(0);
 	}
 
-	std::vector<std::string> files;
 	if(getdir(source, files) >= 0)
 	{
 		printf("found %d image files in folder %s!\n", (int)files.size(), source.c_str());
@@ -189,53 +244,16 @@ int main( int argc, char** argv )
 		printf("could not load file list! wrong path / file?\n");
 	}
 
-	// get HZ
-	double hz = 30;
+	boost::thread lsdThread(run, system, undistorter, outputWrapper, K);
 
-	cv::Mat image = cv::Mat(h,w,CV_8U);
-	int runningIDX=0;
-	float fakeTimeStamp = 0;
-
-	for(unsigned int i = 0; i < files.size(); i++)
+	while(!lsdDone.getValue())
 	{
-		cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
+	    gui.preCall();
 
-		if(imageDist.rows != h_inp || imageDist.cols != w_inp)
-		{
-			if(imageDist.rows * imageDist.cols == 0)
-				printf("failed to load image %s! skipping.\n", files[i].c_str());
-			else
-				printf("image %s has wrong dimensions - expecting %d x %d, found %d x %d. Skipping.\n",
-						files[i].c_str(),
-						w,h,imageDist.cols, imageDist.rows);
-			continue;
-		}
-		assert(imageDist.type() == CV_8U);
-
-		undistorter->undistort(imageDist, image);
-		assert(image.type() == CV_8U);
-
-		if(runningIDX == 0)
-			system->randomInit(image.data, fakeTimeStamp, runningIDX);
-		else
-			system->trackFrame(image.data, runningIDX, hz == 0, fakeTimeStamp);
-		runningIDX++;
-		fakeTimeStamp+=0.03;
-
-		usleep(30000);
-
-		if(fullResetRequested)
-		{
-			printf("FULL RESET!\n");
-			delete system;
-
-			system = new SlamSystem(w, h, K, doSlam);
-			system->setVisualization(outputWrapper);
-
-			fullResetRequested = false;
-			runningIDX = 0;
-		}
+	    gui.postCall();
 	}
+
+	lsdThread.join();
 
 	system->finalize();
 

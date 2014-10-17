@@ -317,7 +317,7 @@ public:
    */
   inline
   void setQuaternion(const Quaternion<Scalar> & quat) {
-    return so3().setQuaternion(quat);
+    so3().setQuaternion(quat);
   }
 
   /**
