@@ -96,6 +96,8 @@ public:
 	/** Returns the current pose estimate. */
 	SE3 getCurrentPoseEstimate();
 
+	Sophus::Sim3f getCurrentPoseEstimateScale();
+
 	/** Sets the visualization where point clouds and camera poses will be sent to. */
 	void setVisualization(Output3DWrapper* outputWrapper);
 

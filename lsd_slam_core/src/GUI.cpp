@@ -107,25 +107,32 @@ void GUI::drawKeyframes()
     lock.unlock();
 }
 
-void GUI::drawFrustum(const glm::mat4 & pose)
+void GUI::drawFrustum()
 {
-    Eigen::Matrix4f lastPose;
-
-    memcpy(lastPose.data(), glm::value_ptr(pose), sizeof(Eigen::Matrix4f));
-
-    Eigen::Matrix3f K = Eigen::Matrix3f::Identity();
-    K(0, 0) = Intrinsics::getInstance().fx();
-    K(1, 1) = Intrinsics::getInstance().fy();
-    K(0, 2) = Intrinsics::getInstance().cx();
-    K(1, 2) = Intrinsics::getInstance().cy();
-
-    Eigen::Matrix3f Kinv = K.inverse();
-
-    pangolin::glDrawFrustrum(Kinv,
-                             Resolution::getInstance().width(),
-                             Resolution::getInstance().height(),
-                             lastPose,
-                             0.1f);
+    glPushMatrix();
+    Sophus::Matrix4f m = pose.getValue().matrix();
+    glMultMatrixf((GLfloat*) m.data());
+    glColor3f(1, 0, 0);
+    glBegin(GL_LINES);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0.05 * (0 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (0 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0.05 * (0 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (Resolution::getInstance().height() - 1 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0.05 * (Resolution::getInstance().width() - 1 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (Resolution::getInstance().height() - 1 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0.05 * (Resolution::getInstance().width() - 1 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (0 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (Resolution::getInstance().width() - 1 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (0 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (Resolution::getInstance().width() - 1 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (Resolution::getInstance().height() - 1 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (Resolution::getInstance().width() - 1 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (Resolution::getInstance().height() - 1 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (0 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (Resolution::getInstance().height() - 1 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (0 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (Resolution::getInstance().height() - 1 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (0 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (0 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (0 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (0 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+        glVertex3f(0.05 * (Resolution::getInstance().width() - 1 - Intrinsics::getInstance().cx()) / Intrinsics::getInstance().fx(), 0.05 * (0 - Intrinsics::getInstance().cy()) / Intrinsics::getInstance().fy(), 0.05);
+    glEnd();
+    glPopMatrix();
+    glColor3f(1, 1, 1);
 }
 
 void GUI::drawGrid()

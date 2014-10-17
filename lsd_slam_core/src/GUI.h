@@ -32,13 +32,15 @@ class GUI
 
         void preCall();
 
-        void drawFrustum(const glm::mat4 & pose);
+        void drawFrustum();
 
         void postCall();
 
         void addKeyframe(Keyframe * newFrame);
 
         void drawKeyframes();
+
+        ThreadMutexObject<Sophus::Sim3f> pose;
 
     private:
         void drawGrid();

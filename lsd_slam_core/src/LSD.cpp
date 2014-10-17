@@ -42,6 +42,7 @@
 std::vector<std::string> files;
 int w, h, w_inp, h_inp;
 ThreadMutexObject<bool> lsdDone(false);
+GUI gui;
 
 std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -162,9 +163,16 @@ void run(SlamSystem * system, Undistorter* undistorter, Output3DWrapper* outputW
         assert(image.type() == CV_8U);
 
         if(runningIDX == 0)
+        {
             system->randomInit(image.data, fakeTimeStamp, runningIDX);
+        }
         else
+        {
             system->trackFrame(image.data, runningIDX, hz == 0, fakeTimeStamp);
+        }
+
+        gui.pose.assignValue(system->getCurrentPoseEstimateScale());
+
         runningIDX++;
         fakeTimeStamp+=0.03;
 
@@ -218,8 +226,6 @@ int main( int argc, char** argv )
 	Resolution::getInstance(w, h);
 	Intrinsics::getInstance(fx, fy, cx, cy);
 
-	GUI gui;
-
 	Output3DWrapper* outputWrapper = new PangolinOutput3DWrapper(w, h, gui);
 
 	// make slam system
@@ -259,6 +265,8 @@ int main( int argc, char** argv )
 	    gui.preCall();
 
 	    gui.drawKeyframes();
+
+	    gui.drawFrustum();
 
 	    gui.postCall();
 	}
