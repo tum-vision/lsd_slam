@@ -72,10 +72,10 @@ class Keyframe
 
             memcpy(camToWorld.data(), &camToWorldRaw[0], 7*sizeof(float));
 
-            float my_scaledTH = 1;
-            float my_absTH = 1;
+            float my_scaledTH = 1e-3;
+            float my_absTH = 1e-1;
             float my_scale = camToWorld.scale();
-            int my_minNearSupport = 5;
+            int my_minNearSupport = 9;
             int my_sparsifyFactor = 1;
 
             InputPointDense * originalInput = (InputPointDense *)pointData;
@@ -154,7 +154,7 @@ class Keyframe
             needsUpdate = false;
         }
 
-        void draw()
+        void drawPoints()
         {
             assert(hasVbo);
 
@@ -180,7 +180,36 @@ class Keyframe
             glPopMatrix();
         }
 
+        void drawCamera()
+        {
+            glPushMatrix();
+            Sophus::Matrix4f m = camToWorld.matrix();
+            glMultMatrixf((GLfloat*) m.data());
+            glColor3f(1, 0, 0);
+            glBegin(GL_LINES);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0.05 * (0 - cx) / fx, 0.05 * (0 - cy) / fy, 0.05);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0.05 * (0 - cx) / fx, 0.05 * (height - 1 - cy) / fy, 0.05);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0.05 * (width - 1 - cx) / fx, 0.05 * (height - 1 - cy) / fy, 0.05);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0.05 * (width - 1 - cx) / fx, 0.05 * (0 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (width - 1 - cx) / fx, 0.05 * (0 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (width - 1 - cx) / fx, 0.05 * (height - 1 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (width - 1 - cx) / fx, 0.05 * (height - 1 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (0 - cx) / fx, 0.05 * (height - 1 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (0 - cx) / fx, 0.05 * (height - 1 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (0 - cx) / fx, 0.05 * (0 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (0 - cx) / fx, 0.05 * (0 - cy) / fy, 0.05);
+                glVertex3f(0.05 * (width - 1 - cx) / fx, 0.05 * (0 - cy) / fy, 0.05);
+            glEnd();
+            glPopMatrix();
+            glColor3f(1, 1, 1);
+        }
+
         int id;
+        int initId;
         uint64_t time;
         bool isKeyframe;
 

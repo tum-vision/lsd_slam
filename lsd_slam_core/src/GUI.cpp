@@ -79,6 +79,7 @@ void GUI::addKeyframe(Keyframe * newFrame)
     }
     else
     {
+        newFrame->initId = keyframes.getReference().size();
         keyframes.getReference()[newFrame->id] = newFrame;
     }
 
@@ -91,11 +92,16 @@ void GUI::drawKeyframes()
 
     for(std::map<int, Keyframe *>::iterator i = keyframes.getReference().begin(); i != keyframes.getReference().end(); ++i)
     {
-        if(!i->second->hasVbo || i->second->needsUpdate)
+        //Don't render first five, according to original code
+        if(i->second->initId >= 5)
         {
-            i->second->computeVbo();
+            if(!i->second->hasVbo || i->second->needsUpdate)
+            {
+                i->second->computeVbo();
+            }
+            i->second->drawPoints();
+            i->second->drawCamera();
         }
-        i->second->draw();
     }
 
     lock.unlock();

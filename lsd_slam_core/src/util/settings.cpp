@@ -74,8 +74,8 @@ float freeDebugParam3 = 1;
 float freeDebugParam4 = 1;
 float freeDebugParam5 = 1;
 
-float KFDistWeight = 4;
-float KFUsageWeight = 3;
+float KFUsageWeight = 4;
+float KFDistWeight = 3;
 
 float minUseGrad = 5;
 float cameraPixelNoise2 = 4*4;
