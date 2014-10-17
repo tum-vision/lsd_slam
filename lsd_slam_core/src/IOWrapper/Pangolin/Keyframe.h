@@ -11,12 +11,19 @@
 #include <GL/glew.h>
 #include "util/settings.h"
 #include "sophus/sim3.hpp"
+#include <iostream>
 
 struct InputPointDense
 {
     float idepth;
     float idepth_var;
     unsigned char color[4];
+};
+
+struct GraphFramePose
+{
+    int id;
+    float camToWorld[7];
 };
 
 class Keyframe
@@ -44,10 +51,8 @@ class Keyframe
             unsigned char color[4];
         };
 
-        void update(Keyframe * newFrame)
+        void updatePoints(Keyframe * newFrame)
         {
-            memcpy(&camToWorldRaw[0], &newFrame->camToWorldRaw[0], sizeof(float) * 7);
-
             if(pointData == 0)
             {
                 pointData = new unsigned char[width * height * sizeof(InputPointDense)];
@@ -69,8 +74,6 @@ class Keyframe
             }
 
             MyVertex * tmpBuffer = new MyVertex[width * height];
-
-            memcpy(camToWorld.data(), &camToWorldRaw[0], 7*sizeof(float));
 
             float my_scaledTH = 1e-3;
             float my_absTH = 1e-1;
@@ -213,7 +216,6 @@ class Keyframe
         uint64_t time;
         bool isKeyframe;
 
-        float camToWorldRaw[7];
         Sophus::Sim3f camToWorld;
 
         float fx;

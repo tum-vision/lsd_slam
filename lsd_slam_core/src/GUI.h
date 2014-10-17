@@ -20,6 +20,7 @@
 #include "util/Intrinsics.h"
 #include "IOWrapper/Pangolin/Keyframe.h"
 #include "util/ThreadMutexObject.h"
+#include "DataStructures/Frame.h"
 
 #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
 
@@ -37,6 +38,8 @@ class GUI
         void postCall();
 
         void addKeyframe(Keyframe * newFrame);
+
+        void updateKeyframePoses(GraphFramePose* framePoseData, int num);
 
         void drawKeyframes();
 

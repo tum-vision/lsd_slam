@@ -44,7 +44,7 @@ void PangolinOutput3DWrapper::publishKeyframe(Frame* f)
     int w = f->width(publishLvl);
     int h = f->height(publishLvl);
 
-    memcpy(&fMsg->camToWorldRaw[0], f->getScaledCamToWorld().cast<float>().data(), sizeof(float) * 7);
+    fMsg->camToWorld = f->getScaledCamToWorld().cast<float>();
 
     fMsg->fx = f->fx(publishLvl);
     fMsg->fy = f->fy(publishLvl);
@@ -127,33 +127,25 @@ void PangolinOutput3DWrapper::publishTrackedFrame(Frame* kf)
 
 void PangolinOutput3DWrapper::publishKeyframeGraph(KeyFrameGraph* graph)
 {
-//    lsd_slam_viewer::keyframeGraphMsg gMsg;
-//
-//    graph->edgesListsMutex.lock();
-//    gMsg.numConstraints = graph->edgesAll.size();
-//    gMsg.constraintsData.resize(gMsg.numConstraints * sizeof(GraphConstraint));
-//    GraphConstraint* constraintData = (GraphConstraint*)gMsg.constraintsData.data();
-//    for(unsigned int i=0;i<graph->edgesAll.size();i++)
-//    {
-//        constraintData[i].from = graph->edgesAll[i]->firstFrame->id();
-//        constraintData[i].to = graph->edgesAll[i]->secondFrame->id();
-//        Sophus::Vector7d err = graph->edgesAll[i]->edge->error();
-//        constraintData[i].err = sqrt(err.dot(err));
-//    }
-//    graph->edgesListsMutex.unlock();
-//
-//    graph->keyframesAllMutex.lock_shared();
-//    gMsg.numFrames = graph->keyframesAll.size();
-//    gMsg.frameData.resize(gMsg.numFrames * sizeof(GraphFramePose));
-//    GraphFramePose* framePoseData = (GraphFramePose*)gMsg.frameData.data();
-//    for(unsigned int i=0;i<graph->keyframesAll.size();i++)
-//    {
-//        framePoseData[i].id = graph->keyframesAll[i]->id();
-//        memcpy(framePoseData[i].camToWorld, graph->keyframesAll[i]->getScaledCamToWorld().cast<float>().data(),sizeof(float)*7);
-//    }
-//    graph->keyframesAllMutex.unlock_shared();
-//
-//    graph_publisher.publish(gMsg);
+    graph->keyframesAllMutex.lock_shared();
+
+    int num = graph->keyframesAll.size();
+
+    unsigned char * buffer = new unsigned char[num * sizeof(GraphFramePose)];
+
+    GraphFramePose* framePoseData = (GraphFramePose*)buffer;
+
+    for(unsigned int i = 0; i < graph->keyframesAll.size(); i++)
+    {
+        framePoseData[i].id = graph->keyframesAll[i]->id();
+        memcpy(framePoseData[i].camToWorld, graph->keyframesAll[i]->getScaledCamToWorld().cast<float>().data(), sizeof(float) * 7);
+    }
+
+    graph->keyframesAllMutex.unlock_shared();
+
+    gui.updateKeyframePoses(framePoseData, num);
+
+    delete [] buffer;
 }
 
 void PangolinOutput3DWrapper::publishTrajectory(std::vector<Eigen::Matrix<float, 3, 1>> trajectory, std::string identifier)

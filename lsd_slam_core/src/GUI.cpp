@@ -73,7 +73,7 @@ void GUI::addKeyframe(Keyframe * newFrame)
     //Exists
     if(keyframes.getReference().find(newFrame->id) != keyframes.getReference().end())
     {
-        keyframes.getReference()[newFrame->id]->update(newFrame);
+        keyframes.getReference()[newFrame->id]->updatePoints(newFrame);
 
         delete newFrame;
     }
@@ -81,6 +81,21 @@ void GUI::addKeyframe(Keyframe * newFrame)
     {
         newFrame->initId = keyframes.getReference().size();
         keyframes.getReference()[newFrame->id] = newFrame;
+    }
+
+    lock.unlock();
+}
+
+void GUI::updateKeyframePoses(GraphFramePose* framePoseData, int num)
+{
+    boost::mutex::scoped_lock lock(keyframes.getMutex());
+
+    for(int i = 0; i < num; i++)
+    {
+        if(keyframes.getReference().find(framePoseData[i].id) != keyframes.getReference().end())
+        {
+            memcpy(keyframes.getReference()[framePoseData[i].id]->camToWorld.data(), &framePoseData[i].camToWorld[0], sizeof(float) * 7);
+        }
     }
 
     lock.unlock();

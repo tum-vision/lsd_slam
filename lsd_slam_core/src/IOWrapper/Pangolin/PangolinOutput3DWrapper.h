@@ -25,12 +25,6 @@ struct GraphConstraint
     float err;
 };
 
-struct GraphFramePose
-{
-    int id;
-    float camToWorld[7];
-};
-
 class PangolinOutput3DWrapper : public Output3DWrapper
 {
     public:
