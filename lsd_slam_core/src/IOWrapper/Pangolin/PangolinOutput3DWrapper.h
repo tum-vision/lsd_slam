@@ -9,6 +9,8 @@
 #define PANGOLINOUTPUT3DWRAPPER_H_
 
 #include "IOWrapper/Output3DWrapper.h"
+#include "Keyframe.h"
+#include "GUI.h"
 
 namespace lsd_slam
 {
@@ -16,10 +18,23 @@ namespace lsd_slam
 class Frame;
 class KeyFrameGraph;
 
+struct GraphConstraint
+{
+    int from;
+    int to;
+    float err;
+};
+
+struct GraphFramePose
+{
+    int id;
+    float camToWorld[7];
+};
+
 class PangolinOutput3DWrapper : public Output3DWrapper
 {
     public:
-        PangolinOutput3DWrapper(int width, int height);
+        PangolinOutput3DWrapper(int width, int height, GUI & gui);
         virtual ~PangolinOutput3DWrapper();
 
         virtual void publishKeyframeGraph(KeyFrameGraph* graph);
@@ -41,6 +56,7 @@ class PangolinOutput3DWrapper : public Output3DWrapper
 
     private:
         int width, height;
+        GUI & gui;
 };
 }
 

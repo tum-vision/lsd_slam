@@ -25,12 +25,15 @@ set(CMAKE_CXX_FLAGS
    "${CMAKE_CXX_FLAGS} -msse4.1 -msse3 -msse2 -msse -march=native -O3 -std=c++0x"
 ) 
 
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g") 
+
 # Set source files
 set(lsd_SOURCE_FILES
   ${PROJECT_SOURCE_DIR}/DataStructures/Frame.cpp
   ${PROJECT_SOURCE_DIR}/DataStructures/FramePoseStruct.cpp
   ${PROJECT_SOURCE_DIR}/DataStructures/FrameMemory.cpp
   ${PROJECT_SOURCE_DIR}/SlamSystem.cpp
+  ${PROJECT_SOURCE_DIR}/GUI.cpp
   ${PROJECT_SOURCE_DIR}/LiveSLAMWrapper.cpp
   ${PROJECT_SOURCE_DIR}/DepthEstimation/DepthMap.cpp
   ${PROJECT_SOURCE_DIR}/DepthEstimation/DepthMapPixelHypothesis.cpp

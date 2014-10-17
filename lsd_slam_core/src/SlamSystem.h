@@ -67,6 +67,7 @@ public:
 
 	bool trackingIsGood;
 
+	bool finalized;
 
 	SlamSystem(int w, int h, Eigen::Matrix3f K, bool enableSLAM = true);
 	SlamSystem(const SlamSystem&) = delete;

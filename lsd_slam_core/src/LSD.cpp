@@ -141,6 +141,9 @@ void run(SlamSystem * system, Undistorter* undistorter, Output3DWrapper* outputW
 
     for(unsigned int i = 0; i < files.size(); i++)
     {
+        if(lsdDone.getValue())
+            break;
+
         cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
 
         if(imageDist.rows != h_inp || imageDist.cols != w_inp)
@@ -217,7 +220,7 @@ int main( int argc, char** argv )
 
 	GUI gui;
 
-	Output3DWrapper* outputWrapper = new PangolinOutput3DWrapper(w, h);
+	Output3DWrapper* outputWrapper = new PangolinOutput3DWrapper(w, h, gui);
 
 	// make slam system
 	SlamSystem * system = new SlamSystem(w, h, K, doSlam);
@@ -246,16 +249,23 @@ int main( int argc, char** argv )
 
 	boost::thread lsdThread(run, system, undistorter, outputWrapper, K);
 
-	while(!lsdDone.getValue())
+	while(!pangolin::ShouldQuit())
 	{
+	    if(lsdDone.getValue() && !system->finalized)
+	    {
+	        system->finalize();
+	    }
+
 	    gui.preCall();
+
+	    gui.drawKeyframes();
 
 	    gui.postCall();
 	}
 
-	lsdThread.join();
+	lsdDone.assignValue(true);
 
-	system->finalize();
+	lsdThread.join();
 
 	delete system;
 	delete undistorter;

@@ -50,7 +50,7 @@ using namespace lsd_slam;
 
 
 SlamSystem::SlamSystem(int w, int h, Eigen::Matrix3f K, bool enableSLAM)
-: SLAMEnabled(enableSLAM), relocalizer(w,h,K)
+: SLAMEnabled(enableSLAM), finalized(false), relocalizer(w,h,K)
 {
 	if(w%16 != 0 || h%16!=0)
 	{
@@ -219,6 +219,8 @@ void SlamSystem::mappingThreadLoop()
 
 void SlamSystem::finalize()
 {
+    finalized = true;
+
 	printf("Finalizing Graph... finding final constraints!!\n");
 
 	lastNumConstraintsAddedOnFullRetrack = 1;
@@ -235,20 +237,22 @@ void SlamSystem::finalize()
 	newConstraintAdded = true;
 	newConstraintCreatedSignal.notify_all();
 	newConstraintMutex.unlock();
+
 	while(doFinalOptimization)
 	{
 		usleep(200000);
 	}
-
 
 	printf("Finalizing Graph... publishing!!\n");
 	unmappedTrackedFramesMutex.lock();
 	unmappedTrackedFramesSignal.notify_one();
 	unmappedTrackedFramesMutex.unlock();
+
 	while(doFinalOptimization)
 	{
 		usleep(200000);
 	}
+
 	boost::unique_lock<boost::mutex> lock(newFrameMappedMutex);
 	newFrameMappedSignal.wait(lock);
 	newFrameMappedSignal.wait(lock);
