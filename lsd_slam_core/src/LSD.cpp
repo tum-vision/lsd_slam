@@ -34,6 +34,7 @@
 #include <algorithm>
 
 #include "util/Undistorter.h"
+#include "util/RawLogReader.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -43,6 +44,8 @@ std::vector<std::string> files;
 int w, h, w_inp, h_inp;
 ThreadMutexObject<bool> lsdDone(false);
 GUI gui;
+RawLogReader * logReader = 0;
+int numFrames = 0;
 
 std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -140,26 +143,41 @@ void run(SlamSystem * system, Undistorter* undistorter, Output3DWrapper* outputW
     int runningIDX=0;
     float fakeTimeStamp = 0;
 
-    for(unsigned int i = 0; i < files.size(); i++)
+    for(unsigned int i = 0; i < numFrames; i++)
     {
         if(lsdDone.getValue())
             break;
 
-        cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
+        cv::Mat imageDist = cv::Mat(h, w, CV_8U);
 
-        if(imageDist.rows != h_inp || imageDist.cols != w_inp)
+        if(logReader)
         {
-            if(imageDist.rows * imageDist.cols == 0)
-                printf("failed to load image %s! skipping.\n", files[i].c_str());
-            else
-                printf("image %s has wrong dimensions - expecting %d x %d, found %d x %d. Skipping.\n",
-                        files[i].c_str(),
-                        w,h,imageDist.cols, imageDist.rows);
-            continue;
+            logReader->getNext();
+
+            cv::Mat3b img(h, w, (cv::Vec3b *)logReader->rgb);
+
+            cv::cvtColor(img, imageDist, CV_RGB2GRAY);
         }
+        else
+        {
+            imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
+
+            if(imageDist.rows != h_inp || imageDist.cols != w_inp)
+            {
+                if(imageDist.rows * imageDist.cols == 0)
+                    printf("failed to load image %s! skipping.\n", files[i].c_str());
+                else
+                    printf("image %s has wrong dimensions - expecting %d x %d, found %d x %d. Skipping.\n",
+                            files[i].c_str(),
+                            w,h,imageDist.cols, imageDist.rows);
+                continue;
+            }
+        }
+
         assert(imageDist.type() == CV_8U);
 
         undistorter->undistort(imageDist, image);
+
         assert(image.type() == CV_8U);
 
         if(runningIDX == 0)
@@ -234,26 +252,43 @@ int main( int argc, char** argv )
 	SlamSystem * system = new SlamSystem(w, h, K, doSlam);
 	system->setVisualization(outputWrapper);
 
+
 	// open image files: first try to open as file.
 	std::string source;
 	if(!(Parse::arg(argc, argv, "-f", source) > 0))
 	{
-		printf("need source files! (set using -f FOLDER)\n");
+		printf("need source files! (set using -f FOLDER or KLG)\n");
 		exit(0);
 	}
 
-	if(getdir(source, files) >= 0)
-	{
-		printf("found %d image files in folder %s!\n", (int)files.size(), source.c_str());
-	}
-	else if(getFile(source, files) >= 0)
-	{
-		printf("found %d image files in file %s!\n", (int)files.size(), source.c_str());
-	}
-	else
-	{
-		printf("could not load file list! wrong path / file?\n");
-	}
+	Bytef * decompressionBuffer = new Bytef[Resolution::getInstance().numPixels() * 2];
+    IplImage * deCompImage = 0;
+
+    if(source.substr(source.find_last_of(".") + 1) == "klg")
+    {
+        logReader = new RawLogReader(decompressionBuffer,
+                                     deCompImage,
+                                     source);
+
+        numFrames = logReader->getNumFrames();
+    }
+    else
+    {
+        if(getdir(source, files) >= 0)
+        {
+            printf("found %d image files in folder %s!\n", (int)files.size(), source.c_str());
+        }
+        else if(getFile(source, files) >= 0)
+        {
+            printf("found %d image files in file %s!\n", (int)files.size(), source.c_str());
+        }
+        else
+        {
+            printf("could not load file list! wrong path / file?\n");
+        }
+
+        numFrames = (int)files.size();
+    }
 
 	boost::thread lsdThread(run, system, undistorter, outputWrapper, K);
 
