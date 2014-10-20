@@ -58,8 +58,6 @@ class GUI
 
         ThreadMutexObject<unsigned char * > depthImgBuffer;
 
-        pangolin::Var<bool> * pause,
-                            * step;
         pangolin::Var<int> * gpuMem;
 
         pangolin::Var<std::string> * totalPoints;

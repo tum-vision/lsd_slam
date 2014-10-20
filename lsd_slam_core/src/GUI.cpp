@@ -31,9 +31,6 @@ GUI::GUI()
 
     pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(180));
 
-    pause = new pangolin::Var<bool>("ui.Pause", false, true);
-    step = new pangolin::Var<bool>("ui.Step", false, false);
-
     gpuMem = new pangolin::Var<int>("ui.GPU memory free", 0);
 
     totalPoints = new pangolin::Var<std::string>("ui.Total points", "0");
@@ -58,8 +55,6 @@ GUI::~GUI()
 
     lock.unlock();
 
-    delete pause;
-    delete step;
     delete totalPoints;
     delete gpuMem;
 }
