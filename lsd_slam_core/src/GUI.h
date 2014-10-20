@@ -31,6 +31,8 @@ class GUI
 
         virtual ~GUI();
 
+        void initImages();
+
         void preCall();
 
         void drawFrustum();
@@ -39,14 +41,22 @@ class GUI
 
         void addKeyframe(Keyframe * newFrame);
 
+        void updateImage(unsigned char * data);
+
         void updateKeyframePoses(GraphFramePose* framePoseData, int num);
 
         void drawKeyframes();
+
+        void drawImages();
 
         ThreadMutexObject<Sophus::Sim3f> pose;
 
     private:
         void drawGrid();
+
+        pangolin::GlTexture * depthImg;
+
+        ThreadMutexObject<unsigned char * > depthImgBuffer;
 
         pangolin::Var<bool> * pause,
                             * step;

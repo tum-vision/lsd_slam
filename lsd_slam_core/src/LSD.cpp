@@ -226,6 +226,8 @@ int main( int argc, char** argv )
 	Resolution::getInstance(w, h);
 	Intrinsics::getInstance(fx, fy, cx, cy);
 
+	gui.initImages();
+
 	Output3DWrapper* outputWrapper = new PangolinOutput3DWrapper(w, h, gui);
 
 	// make slam system
@@ -267,6 +269,8 @@ int main( int argc, char** argv )
 	    gui.drawKeyframes();
 
 	    gui.drawFrustum();
+
+	    gui.drawImages();
 
 	    gui.postCall();
 	}

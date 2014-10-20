@@ -36,6 +36,8 @@ class PangolinOutput3DWrapper : public Output3DWrapper
         // publishes a keyframe. if that frame already existis, it is overwritten, otherwise it is added.
         virtual void publishKeyframe(Frame* f);
 
+        virtual void updateImage(unsigned char * data);
+
         // published a tracked frame that did not become a keyframe (i.e. has no depth data)
         virtual void publishTrackedFrame(Frame* f);
 

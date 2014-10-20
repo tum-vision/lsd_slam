@@ -8,6 +8,8 @@
 #include "GUI.h"
 
 GUI::GUI()
+ : depthImg(0),
+   depthImgBuffer(0)
 {
     pangolin::CreateGlutWindowAndBind("Main", 1280 + 180, 960, GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
@@ -39,6 +41,12 @@ GUI::GUI()
 
 GUI::~GUI()
 {
+    if(depthImg)
+        delete depthImg;
+
+    if(depthImgBuffer.getValue())
+        delete [] depthImgBuffer.getValue();
+
     boost::mutex::scoped_lock lock(keyframes.getMutex());
 
     for(std::map<int, Keyframe *>::iterator i = keyframes.getReference().begin(); i != keyframes.getReference().end(); ++i)
@@ -54,6 +62,22 @@ GUI::~GUI()
     delete step;
     delete totalPoints;
     delete gpuMem;
+}
+
+void GUI::initImages()
+{
+    depthImg = new pangolin::GlTexture(Resolution::getInstance().width(), Resolution::getInstance().height(), GL_RGB, true, 0, GL_RGB, GL_UNSIGNED_BYTE);
+
+    depthImgBuffer.assignValue(new unsigned char[Resolution::getInstance().numPixels() * 3]);
+}
+
+void GUI::updateImage(unsigned char * data)
+{
+    boost::mutex::scoped_lock lock(depthImgBuffer.getMutex());
+
+    memcpy(depthImgBuffer.getReference(), data, Resolution::getInstance().numPixels() * 3);
+
+    lock.unlock();
 }
 
 void GUI::preCall()
@@ -101,9 +125,25 @@ void GUI::updateKeyframePoses(GraphFramePose* framePoseData, int num)
     lock.unlock();
 }
 
+void GUI::drawImages()
+{
+    boost::mutex::scoped_lock lock(depthImgBuffer.getMutex());
+
+    depthImg->Upload(depthImgBuffer.getReference(), GL_RGB, GL_UNSIGNED_BYTE);
+
+    lock.unlock();
+
+    pangolin::Display("Image").Activate();
+
+    depthImg->RenderToViewport(true);
+}
+
 void GUI::drawKeyframes()
 {
     boost::mutex::scoped_lock lock(keyframes.getMutex());
+
+    glEnable(GL_MULTISAMPLE);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 
     for(std::map<int, Keyframe *>::iterator i = keyframes.getReference().begin(); i != keyframes.getReference().end(); ++i)
     {
@@ -118,6 +158,8 @@ void GUI::drawKeyframes()
             i->second->drawCamera();
         }
     }
+
+    glDisable(GL_MULTISAMPLE);
 
     lock.unlock();
 }

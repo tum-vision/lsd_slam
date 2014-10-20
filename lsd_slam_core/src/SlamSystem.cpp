@@ -683,8 +683,8 @@ void SlamSystem::debugDisplayDepthMap()
 
 	if(onSceenInfoDisplay)
 		printMessageOnCVImage(map->debugImageDepth, buf1, buf2);
-	if (displayDepthMap)
-		Util::displayImage( "DebugWindow DEPTH", map->debugImageDepth, false );
+
+	outputWrapper->updateImage((unsigned char *)map->debugImageDepth.data);
 
 	int pressedKey = Util::waitKey(1);
 	handleKey(pressedKey);
