@@ -33,6 +33,11 @@
 #include "lsd_slam_viewer/keyframeMsg.h"
 
 
+#include "boost/foreach.hpp"
+#include "rosbag/bag.h"
+#include "rosbag/query.h"
+#include "rosbag/view.h"
+
 
 PointCloudViewer* viewer = 0;
 
@@ -106,11 +111,47 @@ void rosThreadLoop( int argc, char** argv )
 }
 
 
+void rosFileLoop( int argc, char** argv )
+{
+	ros::init(argc, argv, "viewer");
+	dynamic_reconfigure::Server<lsd_slam_viewer::LSDSLAMViewerParamsConfig> srv;
+	srv.setCallback(dynConfCb);
+
+	rosbag::Bag bag;
+	bag.open(argv[1], rosbag::bagmode::Read);
+
+	std::vector<std::string> topics;
+	topics.push_back(std::string("/lsd_slam/liveframes"));
+	topics.push_back(std::string("/lsd_slam/keyframes"));
+	topics.push_back(std::string("/lsd_slam/graph"));
+
+	rosbag::View view(bag, rosbag::TopicQuery(topics));
+
+	 //for(rosbag::MessageInstance const m = view.begin(); m < view.end(); ++m)
+	 BOOST_FOREACH(rosbag::MessageInstance const m, view)
+	 {
+
+		 if(m.getTopic() == "/lsd_slam/liveframes" || m.getTopic() == "/lsd_slam/keyframes")
+			 frameCb(m.instantiate<lsd_slam_viewer::keyframeMsg>());
+
+
+		 if(m.getTopic() == "/lsd_slam/graph")
+			 graphCb(m.instantiate<lsd_slam_viewer::keyframeGraphMsg>());
+	 }
+
+	ros::spin();
+
+	ros::shutdown();
+
+	printf("Exiting ROS thread\n");
+
+	exit(1);
+}
+
+
 int main( int argc, char** argv )
 {
 
-	// start ROS thread
-	boost::thread rosThread = boost::thread(rosThreadLoop, argc, argv);
 
 	printf("Started QApplication thread\n");
 	// Read command lines arguments.
@@ -118,6 +159,7 @@ int main( int argc, char** argv )
 
 	// Instantiate the viewer.
 	viewer = new PointCloudViewer();
+
 
 	#if QT_VERSION < 0x040000
 		// Set the viewer as the application main widget.
@@ -129,12 +171,24 @@ int main( int argc, char** argv )
 	// Make the viewer window visible on screen.
 	viewer->show();
 
+	boost::thread rosThread;
+
+	if(argc > 1)
+	{
+		rosThread = boost::thread(rosFileLoop, argc, argv);
+	}
+	else
+	{
+		// start ROS thread
+		rosThread = boost::thread(rosThreadLoop, argc, argv);
+	}
+
 
 	application.exec();
-
 
 	printf("Shutting down... \n");
 	ros::shutdown();
 	rosThread.join();
 	printf("Done. \n");
+
 }
