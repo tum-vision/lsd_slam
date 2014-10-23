@@ -49,7 +49,7 @@ We tested LSD-SLAM on two different system configurations, using Ubuntu 12.04 (P
 ## 2.1 ROS fuerte + Ubuntu 12.04
 Install system dependencies:
 
-    sudo apt-get install ros-fuerte-libg2o liblapack-dev libblas-dev freeglut3-dev libqglviewer-qt4-dev
+    sudo apt-get install ros-fuerte-libg2o liblapack-dev libblas-dev freeglut3-dev libqglviewer-qt4-dev libsuitesparse-dev
 
 In your ROS package path, clone the repository:
 
@@ -78,7 +78,7 @@ For this you need to create a rosbuild workspace (if you don't have one yet), us
 
 Install system dependencies:
 
-    sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev
+    sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev libsuitesparse-dev
 
 In your ROS package path, clone the repository:
 
@@ -144,17 +144,17 @@ LSD-SLAM operates on a pinhole camera model, however we give the option to undis
 
 #### Calibration File for FOV camera model:
 
-    d1 d2 d3 d4 d5
+    fx/width fy/height cx/width cy/height d
     in_width in_height
     "crop" / "full" / "none" / "e1 e2 e3 e4 0"
-    out\_width out_height
+    out_width out_height
 
 
-Here, d1 to d5 are fx/width fy/height cx/width cy/height d, as given by the PTAM cameracalibrator, in\_width and in\_height is the input image size, and out\_width out\_height is the desired undistorted image size. The third line specifies how the image is distorted, either by specifying a desired camera matrix in the same format as d1-d4, or by specifying "crop", which crops the image to maximal size.
+Here, the values in the first line are the camera intrinsics and radial distortion parameter as given by the PTAM cameracalibrator, in\_width and in\_height is the input image size, and out\_width out\_height is the desired undistorted image size. The latter can be chosen freely, however 640x480 is recommended as explained in section 3.1.6. The third line specifies how the image is distorted, either by specifying a desired camera matrix in the same format as the first four intrinsic parameters, or by specifying "crop", which crops the image to maximal size while including only valid image pixels.
 
 
 #### Calibration File for Pre-Rectified Images
-This one is with no radial distortion, as a special case of ATAN camera model but without the computational cost:
+This one is without radial distortion correction, as a special case of ATAN camera model but without the computational cost:
 
     fx/width fy/height cx/width cy/height 0
     width height
@@ -164,7 +164,7 @@ This one is with no radial distortion, as a special case of ATAN camera model bu
 
 #### Calibration File for OpenCV camera model [untested!]:
 
-    fx fy cx cy d1 d2 d3 d4
+    fx fy cx cy k1 k2 p1 p2
     inputWidth inputHeight
     "crop" / "full" / "none" / "e1 e2 e3 e4 0"
     outputWidth outputHeight
