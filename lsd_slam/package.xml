@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>lsd_slam</name>
+  <version>0.0.0</version>
+  <description>
+	Large-Scale Direct Monocular SLAM
+ </description>
+
+  <author>Jakob Engel</author>
+  <maintainer email="engelj@in.tum.de">Jakob Engel</maintainer>
+  <license>see http://vision.in.tum.de/lsdslam </license>
+  <url>http://vision.in.tum.de/lsdslam</url>
+
+  <license>TODO</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>lsd_slam_core</run_depend>
+  <run_depend>lsd_slam_viewer</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

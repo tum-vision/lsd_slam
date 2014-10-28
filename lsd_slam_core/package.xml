@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package>
+  <name>lsd_slam_core</name>
+  <version>0.0.0</version>
+  <description>
+     Large-Scale Direct Monocular SLAM
+  </description>
+
+  <author>Jakob Engel</author>
+  <maintainer email="engelj@in.tum.de">Jakob Engel</maintainer>
+  <license>see http://vision.in.tum.de/lsdslam </license>
+  <url>http://vision.in.tum.de/lsdslam</url>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>lsd_slam_viewer</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_depend>suitesparse</build_depend>
+  <build_depend>libg2o</build_depend>
+
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>lsd_slam_viewer</run_depend>
+  <run_depend>rosbag</run_depend>
+  <run_depend>eigen</run_depend>
+  <run_depend>suitesparse</run_depend>
+  <run_depend>libg2o</run_depend>
+  
+</package> 
