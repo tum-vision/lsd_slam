@@ -91,7 +91,7 @@ void Relocalizer::updateCurrentFrame(std::shared_ptr<Frame> currentFrame)
 	int pressedKey = Util::waitKey(1);
 	handleKey(pressedKey);
 }
-void Relocalizer::start(std::vector<Frame*> &allKeyframesList)
+void Relocalizer::start(std::vector<Frame*, Eigen::aligned_allocator<lsd_slam::Frame*> > &allKeyframesList)
 {
 	// make KFForReloc List
 	KFForReloc.clear();

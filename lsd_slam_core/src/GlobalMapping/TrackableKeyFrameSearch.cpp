@@ -53,7 +53,7 @@ TrackableKeyFrameSearch::~TrackableKeyFrameSearch()
 
 
 
-std::vector<TrackableKFStruct> TrackableKeyFrameSearch::findEuclideanOverlapFrames(Frame* frame, float distanceTH, float angleTH, bool checkBothScales)
+std::vector<TrackableKFStruct, Eigen::aligned_allocator<TrackableKFStruct> > TrackableKeyFrameSearch::findEuclideanOverlapFrames(Frame* frame, float distanceTH, float angleTH, bool checkBothScales)
 {
 	// basically the maximal angle-difference in viewing direction is angleTH*(average FoV).
 	// e.g. if the FoV is 130°, then it is angleTH*130°.
@@ -63,7 +63,7 @@ std::vector<TrackableKFStruct> TrackableKeyFrameSearch::findEuclideanOverlapFram
 	Eigen::Vector3d pos = frame->getScaledCamToWorld().translation();
 	Eigen::Vector3d viewingDir = frame->getScaledCamToWorld().rotationMatrix().rightCols<1>();
 
-	std::vector<TrackableKFStruct> potentialReferenceFrames;
+	std::vector<TrackableKFStruct, Eigen::aligned_allocator<TrackableKFStruct> > potentialReferenceFrames;
 
 	float distFacReciprocal = 1;
 	if(checkBothScales)
@@ -102,7 +102,8 @@ std::vector<TrackableKFStruct> TrackableKeyFrameSearch::findEuclideanOverlapFram
 
 Frame* TrackableKeyFrameSearch::findRePositionCandidate(Frame* frame, float maxScore)
 {
-	std::vector<TrackableKFStruct> potentialReferenceFrames = findEuclideanOverlapFrames(frame, maxScore / (KFDistWeight*KFDistWeight), 0.75);
+    std::vector<TrackableKFStruct, Eigen::aligned_allocator<TrackableKFStruct> > potentialReferenceFrames =
+            findEuclideanOverlapFrames(frame, maxScore / (KFDistWeight*KFDistWeight), 0.75);
 
 	float bestScore = maxScore;
 	float bestDist, bestUsage;
@@ -170,12 +171,13 @@ Frame* TrackableKeyFrameSearch::findRePositionCandidate(Frame* frame, float maxS
 	}
 }
 
-std::unordered_set<Frame*> TrackableKeyFrameSearch::findCandidates(Frame* keyframe, Frame* &fabMapResult_out, bool includeFABMAP, bool closenessTH)
+std::unordered_set<Frame*, std::hash<Frame*>, std::equal_to<Frame*>, Eigen::aligned_allocator< Frame* > > TrackableKeyFrameSearch::findCandidates(Frame* keyframe, Frame* &fabMapResult_out, bool includeFABMAP, bool closenessTH)
 {
-	std::unordered_set<Frame*> results;
+	std::unordered_set<Frame*, std::hash<Frame*>, std::equal_to<Frame*>, Eigen::aligned_allocator< Frame* > > results;
 
 	// Add all candidates that are similar in an euclidean sense.
-	std::vector<TrackableKFStruct> potentialReferenceFrames = findEuclideanOverlapFrames(keyframe, closenessTH * 15 / (KFDistWeight*KFDistWeight), 1.0 - 0.25 * closenessTH, true);
+    std::vector<TrackableKFStruct, Eigen::aligned_allocator<TrackableKFStruct> > potentialReferenceFrames =
+            findEuclideanOverlapFrames(keyframe, closenessTH * 15 / (KFDistWeight*KFDistWeight), 1.0 - 0.25 * closenessTH, true);
 	for(unsigned int i=0;i<potentialReferenceFrames.size();i++)
 		results.insert(potentialReferenceFrames[i].ref);
 

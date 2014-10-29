@@ -1234,10 +1234,11 @@ int SlamSystem::findConstraintsForNewKeyFrames(Frame* newKeyFrame, bool forcePar
 	newKeyFrame->lastConstraintTrackedCamToWorld = newKeyFrame->getScaledCamToWorld();
 
 	// =============== get all potential candidates and their initial relative pose. =================
-	std::vector<KFConstraintStruct*> constraints;
+	std::vector<KFConstraintStruct*, Eigen::aligned_allocator<KFConstraintStruct*> > constraints;
 	Frame* fabMapResult = 0;
-	std::unordered_set<Frame*> candidates = trackableKeyFrameSearch->findCandidates(newKeyFrame, fabMapResult, useFABMAP, closeCandidatesTH);
-	std::map< Frame*, Sim3 > candidateToFrame_initialEstimateMap;
+	std::unordered_set<Frame*, std::hash<Frame*>, std::equal_to<Frame*>,
+		Eigen::aligned_allocator< Frame* > > candidates = trackableKeyFrameSearch->findCandidates(newKeyFrame, fabMapResult, useFABMAP, closeCandidatesTH);
+	std::map< Frame*, Sim3, std::less<Frame*>, Eigen::aligned_allocator<std::pair<Frame*, Sim3> > > candidateToFrame_initialEstimateMap;
 
 
 	// erase the ones that are already neighbours.
@@ -1271,8 +1272,9 @@ int SlamSystem::findConstraintsForNewKeyFrames(Frame* newKeyFrame, bool forcePar
 
 	// =============== distinguish between close and "far" candidates in Graph =================
 	// Do a first check on trackability of close candidates.
-	std::unordered_set<Frame*> closeCandidates;
-	std::vector<Frame*> farCandidates;
+	std::unordered_set<Frame*, std::hash<Frame*>, std::equal_to<Frame*>,
+		Eigen::aligned_allocator< Frame* > > closeCandidates;
+	std::vector<Frame*, Eigen::aligned_allocator<Frame*> > farCandidates;
 	Frame* parent = newKeyFrame->hasTrackingParent() ? newKeyFrame->getTrackingParent() : 0;
 
 	int closeFailed = 0;
@@ -1686,7 +1688,7 @@ SE3 SlamSystem::getCurrentPoseEstimate()
 	return camToWorld;
 }
 
-std::vector<FramePoseStruct*> SlamSystem::getAllPoses()
+std::vector<FramePoseStruct*, Eigen::aligned_allocator<FramePoseStruct*> > SlamSystem::getAllPoses()
 {
 	return keyFrameGraph->allFramePoses;
 }

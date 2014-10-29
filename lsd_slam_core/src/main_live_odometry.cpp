@@ -30,10 +30,13 @@
 #include "IOWrapper/ROS/ROSOutput3DWrapper.h"
 #include "IOWrapper/ROS/rosReconfigure.h"
 
+#include <X11/Xlib.h>
 
 using namespace lsd_slam;
 int main( int argc, char** argv )
 {
+    XInitThreads();
+
 	ros::init(argc, argv, "LSD_SLAM");
 
 	dynamic_reconfigure::Server<lsd_slam_core::LSDParamsConfig> srv(ros::NodeHandle("~"));

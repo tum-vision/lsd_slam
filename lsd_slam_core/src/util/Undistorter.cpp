@@ -25,6 +25,7 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <Eigen/Core>
 #include "util/settings.h"
 
 namespace lsd_slam
@@ -278,8 +279,8 @@ UndistorterPTAM::UndistorterPTAM(const char* configFileName)
 		outputCalibration[3] = (ocy+0.5) / out_height;
 		outputCalibration[4] = 0;
 
-		remapX = new float[out_width * out_height];
-		remapY = new float[out_width * out_height];
+		remapX = (float*)Eigen::internal::aligned_malloc(out_width * out_height *sizeof(float));
+		remapY = (float*)Eigen::internal::aligned_malloc(out_width * out_height *sizeof(float));
 
 		for(int y=0;y<out_height;y++)
 		{
@@ -346,8 +347,8 @@ UndistorterPTAM::UndistorterPTAM(const char* configFileName)
 UndistorterPTAM::~UndistorterPTAM()
 {
 
-	delete[] remapX;
-	delete[] remapY;
+	Eigen::internal::aligned_free((void*)remapX);
+	Eigen::internal::aligned_free((void*)remapY);
 
 }
 

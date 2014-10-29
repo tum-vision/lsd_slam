@@ -26,6 +26,8 @@
 #include "IOWrapper/ImageDisplay.h"
 #include "Tracking/least_squares.h"
 
+#include <Eigen/Core>
+
 namespace lsd_slam
 {
 
@@ -62,16 +64,16 @@ SE3Tracker::SE3Tracker(int w, int h, Eigen::Matrix3f K)
 	cyi = KInv(1,2);
 
 
-	buf_warped_residual = new float[w*h];
-	buf_warped_dx = new float[w*h];
-	buf_warped_dy = new float[w*h];
-	buf_warped_x = new float[w*h];
-	buf_warped_y = new float[w*h];
-	buf_warped_z = new float[w*h];
+	buf_warped_residual = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_dx = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_dy = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_x = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_y = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_z = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
 
-	buf_d = new float[w*h];
-	buf_idepthVar = new float[w*h];
-	buf_weight_p = new float[w*h];
+	buf_d = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_idepthVar = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_weight_p = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
 
 	buf_warped_size = 0;
 
@@ -100,16 +102,16 @@ SE3Tracker::~SE3Tracker()
 	debugImageOldImageWarped.release();
 
 
-	delete[] buf_warped_residual;
-	delete[] buf_warped_dx;
-	delete[] buf_warped_dy;
-	delete[] buf_warped_x;
-	delete[] buf_warped_y;
-	delete[] buf_warped_z;
+	Eigen::internal::aligned_free((void*)buf_warped_residual);
+	Eigen::internal::aligned_free((void*)buf_warped_dx);
+	Eigen::internal::aligned_free((void*)buf_warped_dy);
+	Eigen::internal::aligned_free((void*)buf_warped_x);
+	Eigen::internal::aligned_free((void*)buf_warped_y);
+	Eigen::internal::aligned_free((void*)buf_warped_z);
 
-	delete[] buf_d;
-	delete[] buf_idepthVar;
-	delete[] buf_weight_p;
+	Eigen::internal::aligned_free((void*)buf_d);
+	Eigen::internal::aligned_free((void*)buf_idepthVar);
+	Eigen::internal::aligned_free((void*)buf_weight_p);
 }
 
 

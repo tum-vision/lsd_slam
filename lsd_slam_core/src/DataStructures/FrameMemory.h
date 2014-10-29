@@ -25,7 +25,7 @@
 #include <deque>
 #include <list>
 #include <boost/thread/shared_mutex.hpp>
-
+#include <Eigen/Core> //For EIGEN MACRO
 
 namespace lsd_slam
 {
@@ -35,6 +35,8 @@ class Frame;
 class FrameMemory
 {
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	/** Returns the global instance. Creates it when the method is first called. */
 	static FrameMemory& getInstance();
 

@@ -51,7 +51,7 @@ void FrameMemory::releaseBuffes()
 
 		for(unsigned int i=0;i<p.second.size();i++)
 		{
-			delete (char*)p.second[i];
+			Eigen::internal::aligned_free(p.second[i]);
 			bufferSizes.erase(p.second[i]);
 		}
 
@@ -121,7 +121,7 @@ void* FrameMemory::allocateBuffer(unsigned int size)
 {
 	//printf("allocateFloatBuffer(%d)\n", size);
 	
-	void* buffer = (void*)(new char[size]);
+	void* buffer = Eigen::internal::aligned_malloc(size);
 	bufferSizes.insert(std::make_pair(buffer, size));
 	return buffer;
 }

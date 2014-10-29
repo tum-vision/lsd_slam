@@ -39,7 +39,7 @@ public:
 	~Relocalizer();
 
 	void updateCurrentFrame(std::shared_ptr<Frame> currentFrame);
-	void start(std::vector<Frame*> &allKeyframesList);
+    void start(std::vector<Frame*, Eigen::aligned_allocator<lsd_slam::Frame*> > &allKeyframesList);
 	void stop();
 
 	bool waitResult(int milliseconds);

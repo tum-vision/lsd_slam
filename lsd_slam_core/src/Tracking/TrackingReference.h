@@ -48,6 +48,8 @@ class KeyFrameGraph;
 class TrackingReference
 {
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	/** Creates an empty TrackingReference with optional preallocation per level. */
 	TrackingReference();
 	~TrackingReference();
