@@ -1,0 +1,32 @@
+<package>
+  <name>lsd_slam_viewer</name>
+  <version>0.0.0</version>  
+
+  <description>
+     3D Viewer for LSD-SLAM.
+  </description>
+
+  <author>Jakob Engel</author>
+  <maintainer email="engelj@in.tum.de">Jakob Engel</maintainer>
+  <license>see http://vision.in.tum.de/lsdslam</license>
+  <url>http://vision.in.tum.de/lsdslam</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>message_generation</build_depend>
+
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>rosbag</run_depend>
+
+</package>
+
+
