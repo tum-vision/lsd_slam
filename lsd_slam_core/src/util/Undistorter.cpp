@@ -516,11 +516,11 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 		distCoeffs.at<float>(i, 0) = inputCalibration[4 + i];
 
 	originalK_ = cv::Mat(3, 3, CV_64F, cv::Scalar(0));
-	originalK_.at<double>(0, 0) = inputCalibration[0] * in_width;
-	originalK_.at<double>(1, 1) = inputCalibration[1] * in_height;
+	originalK_.at<double>(0, 0) = inputCalibration[0];
+	originalK_.at<double>(1, 1) = inputCalibration[1];
 	originalK_.at<double>(2, 2) = 1;
-	originalK_.at<double>(0, 2) = inputCalibration[2] * in_width;
-	originalK_.at<double>(1, 2) = inputCalibration[3] * in_height;
+	originalK_.at<double>(0, 2) = inputCalibration[2];
+	originalK_.at<double>(1, 2) = inputCalibration[3];
 
 	if (valid)
 	{
