@@ -41,9 +41,11 @@ namespace lsd_slam
 #endif
 
 
-
-#define enablePrintDebugInfo true
-
+#if defined(NDEBUG)
+	#define enablePrintDebugInfo false
+#else
+	#define enablePrintDebugInfo true
+#endif
 
 /** ============== constants for validity handeling ======================= */
 

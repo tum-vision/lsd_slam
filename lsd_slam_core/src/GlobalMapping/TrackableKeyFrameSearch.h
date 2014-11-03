@@ -22,6 +22,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <Eigen/StdVector>
 #include "util/SophusUtil.h"
 
 #ifdef HAVE_FABMAP
@@ -57,6 +58,8 @@ struct TrackableKFStruct
 class TrackableKeyFrameSearch
 {
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	/** Constructor. */
 	TrackableKeyFrameSearch(KeyFrameGraph* graph, int w, int h, Eigen::Matrix3f K);
 	~TrackableKeyFrameSearch();
@@ -65,7 +68,7 @@ public:
 	 * Finds candidates for trackable frames.
 	 * Returns the most likely candidates first.
 	 */
-	std::unordered_set<Frame*> findCandidates(Frame* keyframe, Frame* &fabMapResult_out, bool includeFABMAP=true, bool closenessTH=1.0);
+	std::unordered_set<Frame*, std::hash<Frame*>, std::equal_to<Frame*>, Eigen::aligned_allocator< Frame* > > findCandidates(Frame* keyframe, Frame* &fabMapResult_out, bool includeFABMAP=true, bool closenessTH=1.0);
 	Frame* findRePositionCandidate(Frame* frame, float maxScore=1);
 	
 
@@ -84,7 +87,7 @@ private:
 	 * Uses FabMap internally.
 	 */
 	Frame* findAppearanceBasedCandidate(Frame* keyframe);
-	std::vector<TrackableKFStruct> findEuclideanOverlapFrames(Frame* frame, float distanceTH, float angleTH, bool checkBothScales = false);
+	std::vector<TrackableKFStruct, Eigen::aligned_allocator<TrackableKFStruct> > findEuclideanOverlapFrames(Frame* frame, float distanceTH, float angleTH, bool checkBothScales = false);
 
 #ifdef HAVE_FABMAP
 	std::unordered_map<int, Frame*> fabmapIDToKeyframe;

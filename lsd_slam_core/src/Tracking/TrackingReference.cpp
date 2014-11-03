@@ -50,7 +50,8 @@ void TrackingReference::releaseAll()
 		if(posData[level] != nullptr) delete[] posData[level];
 		if(gradData[level] != nullptr) delete[] gradData[level];
 		if(colorAndVarData[level] != nullptr) delete[] colorAndVarData[level];
-		if(pointPosInXYGrid[level] != nullptr) delete[] pointPosInXYGrid[level];
+		if(pointPosInXYGrid[level] != nullptr)
+			Eigen::internal::aligned_free((void*)pointPosInXYGrid[level]);
 		numData[level] = 0;
 	}
 	wh_allocated = 0;
@@ -114,7 +115,8 @@ void TrackingReference::makePointCloud(int level)
 	const Eigen::Vector4f* pyrGradSource = keyframe->gradients(level);
 
 	if(posData[level] == nullptr) posData[level] = new Eigen::Vector3f[w*h];
-	if(pointPosInXYGrid[level] == nullptr) pointPosInXYGrid[level] = new int[w*h];
+	if(pointPosInXYGrid[level] == nullptr)
+		pointPosInXYGrid[level] = (int*)Eigen::internal::aligned_malloc(w*h*sizeof(int));;
 	if(gradData[level] == nullptr) gradData[level] = new Eigen::Vector2f[w*h];
 	if(colorAndVarData[level] == nullptr) colorAndVarData[level] = new Eigen::Vector2f[w*h];
 

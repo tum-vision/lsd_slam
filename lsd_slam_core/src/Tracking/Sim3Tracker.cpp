@@ -63,24 +63,24 @@ Sim3Tracker::Sim3Tracker(int w, int h, Eigen::Matrix3f K)
 	cyi = KInv(1,2);
 
 
-	buf_warped_residual = new float[w*h];
-	buf_warped_weights = new float[w*h];
-	buf_warped_dx = new float[w*h];
-	buf_warped_dy = new float[w*h];
-	buf_warped_x = new float[w*h];
-	buf_warped_y = new float[w*h];
-	buf_warped_z = new float[w*h];
+	buf_warped_residual = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_weights = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_dx = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_dy = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_x = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_y = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_z = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
 
-	buf_d = new float[w*h];
-	buf_residual_d = new float[w*h];
-	buf_idepthVar = new float[w*h];
-	buf_warped_idepthVar = new float[w*h];
-	buf_weight_p = new float[w*h];
-	buf_weight_d = new float[w*h];
+	buf_d = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_residual_d = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_idepthVar = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_warped_idepthVar = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_weight_p = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_weight_d = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
 
-	buf_weight_Huber = new float[w*h];
-	buf_weight_VarP = new float[w*h];
-	buf_weight_VarD = new float[w*h];
+	buf_weight_Huber = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_weight_VarP = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
+	buf_weight_VarD = (float*)Eigen::internal::aligned_malloc(w*h*sizeof(float));
 
 	buf_warped_size = 0;
 
@@ -125,24 +125,24 @@ Sim3Tracker::~Sim3Tracker()
 	debugImageWeightedResD.release();
 
 
-	delete[] buf_warped_residual;
-	delete[] buf_warped_weights;
-	delete[] buf_warped_dx;
-	delete[] buf_warped_dy;
-	delete[] buf_warped_x;
-	delete[] buf_warped_y;
-	delete[] buf_warped_z;
+	Eigen::internal::aligned_free((void*)buf_warped_residual);
+	Eigen::internal::aligned_free((void*)buf_warped_weights);
+	Eigen::internal::aligned_free((void*)buf_warped_dx);
+	Eigen::internal::aligned_free((void*)buf_warped_dy);
+	Eigen::internal::aligned_free((void*)buf_warped_x);
+	Eigen::internal::aligned_free((void*)buf_warped_y);
+	Eigen::internal::aligned_free((void*)buf_warped_z);
 
-	delete[] buf_d;
-	delete[] buf_residual_d;
-	delete[] buf_idepthVar;
-	delete[] buf_warped_idepthVar;
-	delete[] buf_weight_p;
-	delete[] buf_weight_d;
+	Eigen::internal::aligned_free((void*)buf_d);
+	Eigen::internal::aligned_free((void*)buf_residual_d);
+	Eigen::internal::aligned_free((void*)buf_idepthVar);
+	Eigen::internal::aligned_free((void*)buf_warped_idepthVar);
+	Eigen::internal::aligned_free((void*)buf_weight_p);
+	Eigen::internal::aligned_free((void*)buf_weight_d);
 
-	delete[] buf_weight_Huber;
-	delete[] buf_weight_VarP;
-	delete[] buf_weight_VarD;
+	Eigen::internal::aligned_free((void*)buf_weight_Huber);
+	Eigen::internal::aligned_free((void*)buf_weight_VarP);
+	Eigen::internal::aligned_free((void*)buf_weight_VarD);
 }
 
 

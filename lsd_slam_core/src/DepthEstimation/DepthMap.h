@@ -42,6 +42,8 @@ class KeyFrameGraph;
 class DepthMap
 {
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	DepthMap(int w, int h, const Eigen::Matrix3f& K);
 	DepthMap(const DepthMap&) = delete;
 	DepthMap& operator=(const DepthMap&) = delete;
