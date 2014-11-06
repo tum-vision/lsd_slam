@@ -162,7 +162,7 @@ This one is without radial distortion correction, as a special case of ATAN came
     width height
 
 
-#### Calibration File for OpenCV camera model [untested!]:
+#### Calibration File for OpenCV camera model:
 
     fx fy cx cy k1 k2 p1 p2
     inputWidth inputHeight
