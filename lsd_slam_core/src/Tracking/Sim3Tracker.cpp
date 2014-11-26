@@ -24,7 +24,7 @@
 #include "Tracking/TrackingReference.h"
 #include "util/globalFuncs.h"
 #include "IOWrapper/ImageDisplay.h"
-#include "Tracking/least_squares.h"
+#include "Tracking/LGSX.h"
 
 namespace lsd_slam
 {
@@ -162,7 +162,7 @@ Sim3 Sim3Tracker::trackFrameSim3(
 
 	// ============ track frame ============
     Sim3 referenceToFrame = frameToReference_initialEstimate.inverse();
-	NormalEquationsLeastSquares7 ls7;
+	LGS7 ls7;
 
 
 	int numCalcResidualCalls[PYRAMID_LEVELS];
@@ -855,10 +855,10 @@ Sim3ResidualStruct Sim3Tracker::calcSim3WeightsAndResidual(
 
 
 #if defined(ENABLE_SSE)
-void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
+void Sim3Tracker::calcSim3LGSSSE(LGS7 &ls7)
 {
-	NormalEquationsLeastSquares4 ls4;
-	NormalEquationsLeastSquares ls6;
+	LGS4 ls4;
+	LGS6 ls6;
 	ls6.initialize(width*height);
 	ls4.initialize(width*height);
 
@@ -866,38 +866,30 @@ void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
 
 	for(int i=0;i<buf_warped_size-3;i+=4)
 	{
-		Vector6 v1,v2,v3,v4;
-		Vector4 v41,v42,v43,v44;
 		__m128 val1, val2, val3, val4;
+
+		__m128 J41, J42, J43, J44;
+		__m128 J61, J62, J63, J64, J65, J66;
+
 
 		// redefine pz
 		__m128 pz = _mm_load_ps(buf_warped_z+i);
 		pz = _mm_rcp_ps(pz);						// pz := 1/z
 
 		//v4[3] = z;
-		v41[3] = SSEE(pz,0);
-		v42[3] = SSEE(pz,1);
-		v43[3] = SSEE(pz,2);
-		v44[3] = SSEE(pz,3);
+		J44 = pz;
 
 		__m128 gx = _mm_load_ps(buf_warped_dx+i);
 		val1 = _mm_mul_ps(pz, gx);			// gx / z => SET [0]
 		//v[0] = z*gx;
-		v1[0] = SSEE(val1,0);
-		v2[0] = SSEE(val1,1);
-		v3[0] = SSEE(val1,2);
-		v4[0] = SSEE(val1,3);
-
+		J61 = val1;
 
 
 
 		__m128 gy = _mm_load_ps(buf_warped_dy+i);
 		val1 = _mm_mul_ps(pz, gy);					// gy / z => SET [1]
 		//v[1] = z*gy;
-		v1[1] = SSEE(val1,0);
-		v2[1] = SSEE(val1,1);
-		v3[1] = SSEE(val1,2);
-		v4[1] = SSEE(val1,3);
+		J62 = val1;
 
 
 		__m128 px = _mm_load_ps(buf_warped_x+i);
@@ -908,34 +900,22 @@ void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
 		val2 = _mm_mul_ps(val2, pz);	//  py * gx * z
 		val1 = _mm_sub_ps(val1, val2);  // px * gy * z - py * gx * z => SET [5]
 		//v[5] = -py * z * gx +  px * z * gy;
-		v1[5] = SSEE(val1,0);
-		v2[5] = SSEE(val1,1);
-		v3[5] = SSEE(val1,2);
-		v4[5] = SSEE(val1,3);
+		J66 = val1;
 
 
 		// redefine pz
 		pz = _mm_mul_ps(pz,pz); 		// pz := 1/(z*z)
 
 		//v4[0] = z_sqr;
-		v41[0] = SSEE(pz,0);
-		v42[0] = SSEE(pz,1);
-		v43[0] = SSEE(pz,2);
-		v44[0] = SSEE(pz,3);
+		J41 = pz;
 
 		//v4[1] = z_sqr * py;
 		__m128 pypz = _mm_mul_ps(pz, py);
-		v41[1] = SSEE(pypz,0);
-		v42[1] = SSEE(pypz,1);
-		v43[1] = SSEE(pypz,2);
-		v44[1] = SSEE(pypz,3);
+		J42 = pypz;
 
 		//v4[2] = -z_sqr * px;
 		__m128 mpxpz = _mm_sub_ps(zeros,_mm_mul_ps(pz, px));
-		v41[2] = SSEE(mpxpz,0);
-		v42[2] = SSEE(mpxpz,1);
-		v43[2] = SSEE(mpxpz,2);
-		v44[2] = SSEE(mpxpz,3);
+		J43 = mpxpz;
 
 
 
@@ -949,10 +929,7 @@ void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
 		val3 = _mm_add_ps(val1, val2);
 		val3 = _mm_sub_ps(zeros,val3);	//-px * z_sqr * gx -py * z_sqr * gy
 		//v[2] = -px * z_sqr * gx -py * z_sqr * gy;	=> SET [2]
-		v1[2] = SSEE(val3,0);
-		v2[2] = SSEE(val3,1);
-		v3[2] = SSEE(val3,2);
-		v4[2] = SSEE(val3,3);
+		J63 = val3;
 
 
 		val3 = _mm_mul_ps(val1, py); // px * z_sqr * gx * py
@@ -963,10 +940,7 @@ void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
 		//v[3] = -px * py * z_sqr * gx +
 		//       -py * py * z_sqr * gy +
 		//       -gy;		=> SET [3]
-		v1[3] = SSEE(val4,0);
-		v2[3] = SSEE(val4,1);
-		v3[3] = SSEE(val4,2);
-		v4[3] = SSEE(val4,3);
+		J64 = val4;
 
 
 		val3 = _mm_mul_ps(val1, px); // px * px * z_sqr * gx
@@ -976,33 +950,31 @@ void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
 		//v[4] = px * px * z_sqr * gx +
 		//	   px * py * z_sqr * gy +
 		//	   gx;				=> SET [4]
-		v1[4] = SSEE(val4,0);
-		v2[4] = SSEE(val4,1);
-		v3[4] = SSEE(val4,2);
-		v4[4] = SSEE(val4,3);
+		J65 = val4;
 
 
-		// step 6: integrate into A and b:
-		ls6.update(v1, *(buf_warped_residual+i+0), *(buf_weight_p+i+0));
-		ls4.update(v41, *(buf_residual_d+i+0), *(buf_weight_d+i+0));
+		if(i+3<buf_warped_size)
+		{
+			ls4.updateSSE(J41, J42, J43, J44, _mm_load_ps(buf_residual_d+i), _mm_load_ps(buf_weight_d+i));
+			ls6.updateSSE(J61, J62, J63, J64, J65, J66, _mm_load_ps(buf_warped_residual+i), _mm_load_ps(buf_weight_p+i));
+		}
+		else
+		{
+			for(int k=0;i+k<buf_warped_size;k++)
+			{
+				Vector6 v6;
+				v6 << SSEE(J61,k),SSEE(J62,k),SSEE(J63,k),SSEE(J64,k),SSEE(J65,k),SSEE(J66,k);
+				Vector4 v4;
+				v4 << SSEE(J41,k),SSEE(J42,k),SSEE(J43,k),SSEE(J44,k);
 
-		if(i+1>=buf_warped_size) break;
-		ls6.update(v2, *(buf_warped_residual+i+1), *(buf_weight_p+i+1));
-		ls4.update(v42, *(buf_residual_d+i+1), *(buf_weight_d+i+1));
-
-		if(i+2>=buf_warped_size) break;
-		ls6.update(v3, *(buf_warped_residual+i+2), *(buf_weight_p+i+2));
-		ls4.update(v43, *(buf_residual_d+i+2), *(buf_weight_d+i+2));
-
-		if(i+3>=buf_warped_size) break;
-		ls6.update(v4, *(buf_warped_residual+i+3), *(buf_weight_p+i+3));
-		ls4.update(v44, *(buf_residual_d+i+3), *(buf_weight_d+i+3));
+				ls4.update(v4, *(buf_residual_d+i+k), *(buf_weight_d+i+k));
+				ls6.update(v6, *(buf_warped_residual+i+k), *(buf_weight_p+i+k));
+			}
+		}
 	}
 
 	ls4.finishNoDivide();
 	ls6.finishNoDivide();
-
-
 	ls7.initializeFrom(ls6, ls4);
 
 
@@ -1010,17 +982,17 @@ void Sim3Tracker::calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7)
 #endif
 
 #if defined(ENABLE_NEON)
-void Sim3Tracker::calcSim3LGSNEON(NormalEquationsLeastSquares7 &ls7)
+void Sim3Tracker::calcSim3LGSNEON(LGS7 &ls7)
 {
 	calcSim3LGS(ls7);
 }
 #endif
 
 
-void Sim3Tracker::calcSim3LGS(NormalEquationsLeastSquares7 &ls7)
+void Sim3Tracker::calcSim3LGS(LGS7 &ls7)
 {
-	NormalEquationsLeastSquares4 ls4;
-	NormalEquationsLeastSquares ls6;
+	LGS4 ls4;
+	LGS6 ls6;
 	ls6.initialize(width*height);
 	ls4.initialize(width*height);
 

@@ -23,7 +23,7 @@
 #include "util/settings.h"
 #include "util/EigenCoreInclude.h"
 #include "util/SophusUtil.h"
-#include "Tracking/least_squares.h"
+#include "Tracking/LGSX.h"
 
 
 namespace lsd_slam
@@ -178,12 +178,12 @@ private:
 
 
 
-	void calcSim3LGS(NormalEquationsLeastSquares7 &ls7);
+	void calcSim3LGS(LGS7 &ls7);
 #if defined(ENABLE_SSE)
-	void calcSim3LGSSSE(NormalEquationsLeastSquares7 &ls7);
+	void calcSim3LGSSSE(LGS7 &ls7);
 #endif
 #if defined(ENABLE_NEON)
-	void calcSim3LGSNEON(NormalEquationsLeastSquares7 &ls7);
+	void calcSim3LGSNEON(LGS7 &ls7);
 #endif
 
 	
