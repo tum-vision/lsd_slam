@@ -89,8 +89,18 @@ Compile the two package by typing:
     rosmake lsd_slam
 
 
+Build  using **Catkin** tool from **catkin** branch:
 
+	sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev libsuitesparse-dev ros-indigo-cmake-modules
+	mkdir -p ~/catkin_ws/src/
+	cd ~/catkin_ws/src/
+	git clone -b catkin https://github.com/tum-vision/lsd_slam.git
+	cd ~/catkin_ws
 
+Build order a bit strange as core package depends on one header from viewer package:
+
+	catkin_make --pkg lsd_slam_viewer
+	catkin_make --pkg lsd_slam_core
 
 
 ## 2.3 openFabMap for large loop-closure detection [optional]
