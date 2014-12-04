@@ -25,7 +25,10 @@
 #include "util/IndexThreadReduce.h"
 #include "util/SophusUtil.h"
 
-
+#ifndef isnanf
+	#include <cmath>
+	#define isnanf (float)std::isnan
+#endif
 
 namespace lsd_slam
 {
