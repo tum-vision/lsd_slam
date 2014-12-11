@@ -55,9 +55,14 @@ void dynConfCb(lsd_slam_viewer::LSDSLAMViewerParamsConfig &config, uint32_t leve
 	showCurrentCamera = config.showCurrentCamera;
 	showCurrentPointcloud = config.showCurrentPointcloud;
 
-
+#ifdef __MACH__
+	scaledDepthVarTH = __exp10( config.scaledDepthVarTH );
+	absDepthVarTH = __exp10( config.absDepthVarTH );
+#else
 	scaledDepthVarTH = exp10( config.scaledDepthVarTH );
-	absDepthVarTH = exp10( config.absDepthVarTH );
+	absDepthVarTH = exp10( config.absDepthVarTH );	
+#endif
+	
 	minNearSupport = config.minNearSupport;
 	sparsifyFactor = config.sparsifyFactor;
 	cutFirstNKf = config.cutFirstNKf;

@@ -29,10 +29,15 @@
 #include <zlib.h>
 #include <iostream>
 
-
-#include <GL/glx.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#ifdef __MACH__
+	//#include <GL/glx.h>
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#else
+	#include <GL/glx.h>
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
 
 #include "QGLViewer/manipulatedCameraFrame.h"
 
