@@ -72,47 +72,9 @@ add_definitions("-DUSE_ROS")
 add_definitions("-DENABLE_SSE")
 
 # Also add some useful compiler flag
-#set(CMAKE_CXX_FLAGS
-#   "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
-#)
-
-# Notes from stackoverflow:
-# The short solution would be removing '-march=native' option (at least it worked for me).
-# Instead of falling back to the default SSE2, if you care about performance, 
-# you are better off with enabling optimization the instruction set closest to AVX 
-# which would be SSE4.2. So I'd rather replace -march=native with -msse4.2. 
-# Even better: -march=native -mno-avx. Or see the answer by @capisce
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -msse4.2 -Wall -D_REENTRANT --std=c++0x")
-
-# On Mac OSX it is not possible to build with at least clang shipped by Apple
-# my guess due to lack of some c++0x/C++11 features
-# However gcc unable to link against libraries built by clang
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	# SET (CMAKE_C_COMPILER             "/usr/bin/clang")
-	# SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
-	#     SET (CMAKE_AR      "/usr/bin/llvm-ar")
-	#     SET (CMAKE_LINKER  "/usr/bin/llvm-ld")
-	#     SET (CMAKE_NM      "/usr/bin/llvm-nm")
-	#     SET (CMAKE_OBJDUMP "/usr/bin/llvm-objdump")
-	#     SET (CMAKE_RANLIB  "/usr/bin/llvm-ranlib")
-	# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ")
-	SET (CMAKE_C_COMPILER             "/usr/local/bin/gcc")
-	SET (CMAKE_CXX_COMPILER             "/usr/local/bin/g++")
-	SET (CMAKE_AR      "/usr/local/bin/ar")
-	SET (CMAKE_LINKER  "/usr/local/bin/ld")
-	SET (CMAKE_NM      "/usr/local/bin/nm")
-	SET (CMAKE_OBJDUMP "/usr/local/bin/objdump")
-	SET (CMAKE_RANLIB  "/usr/local/bin/ranlib")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -Wall -D_REENTRANT --std=c++0x")
-else()
-	# SSE flags
-	set(CMAKE_CXX_FLAGS
-	"${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
-	)
-endif()
-
-
+set(CMAKE_CXX_FLAGS
+  "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
+)
 
 # Set source files
 set(lsd_SOURCE_FILES
@@ -149,6 +111,7 @@ include_directories(
   include
   ${EIGEN_INCLUDE_DIR}
   ${EIGEN3_INCLUDE_DIR}
+  ${X11_INCLUDE_DIR}
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
   ${CSPARSE_INCLUDE_DIR} #Has been set by SuiteParse
@@ -158,14 +121,14 @@ include_directories(
 
 # build shared library.
 add_library(lsdslam SHARED ${SOURCE_FILES})
-target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} ${CSPARSE_LIBRARY}) 
+target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} ${CSPARSE_LIBRARY} ${X11_LIBRARIES}) 
 #csparse cxsparse )
 #rosbuild_link_boost(lsdslam thread)
 
 
 # build live ros node
 add_executable(live_slam src/main_live_odometry.cpp)
-target_link_libraries(live_slam lsdslam ${catkin_LIBRARIES} ${G2O_LIBRARIES} ${X11_LIBRARIES} )
+target_link_libraries(live_slam lsdslam ${catkin_LIBRARIES} ${G2O_LIBRARIES})
 
 
 # build image node
