@@ -21,6 +21,7 @@
   <build_depend>eigen</build_depend>
   <build_depend>suitesparse</build_depend>
   <build_depend>libg2o</build_depend>
+  <build_depend>cmake_modules</build_depend>
 
   <run_depend>cv_bridge</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>

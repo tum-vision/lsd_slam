@@ -8,7 +8,6 @@ project(lsd_slam_core)
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel : w/o debug symbols, w/ optimization, stripped binaries
 set(CMAKE_BUILD_TYPE Release)
-
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   dynamic_reconfigure
@@ -16,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   roscpp
   rosbag
+  cmake_modules
 )
 
 find_package(Eigen REQUIRED)
@@ -42,7 +42,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
   LIBRARIES lsdslam
   DEPENDS Eigen SuiteSparse
-  CATKIN_DEPENDS libg2o 
+  DEPENDS libg2o 
 )
 
 # SSE flags
@@ -97,7 +97,7 @@ include_directories(
 
 # build shared library.
 add_library(lsdslam SHARED ${SOURCE_FILES})
-target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} csparse cxsparse )
+target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} csparse cxsparse X11)
 #rosbuild_link_boost(lsdslam thread)
 
 

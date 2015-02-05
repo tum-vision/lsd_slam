@@ -19,7 +19,8 @@
   <build_depend>roslib</build_depend>
   <build_depend>rosbag</build_depend>
   <build_depend>message_generation</build_depend>
-
+  <build_depend>cmake_modules</build_depend>
+    
   <run_depend>cv_bridge</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
   <run_depend>sensor_msgs</run_depend>
