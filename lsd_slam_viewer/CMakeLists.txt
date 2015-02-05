@@ -39,7 +39,7 @@ include_directories(${QGLVIEWER_INCLUDE_DIR}
 
 # SSE flags
 set(CMAKE_CXX_FLAGS
-   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native -Wall -std=c++0x"
+   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS}"
 )
 
 add_message_files(DIRECTORY msg FILES keyframeMsg.msg keyframeGraphMsg.msg)
