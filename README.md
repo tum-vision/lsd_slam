@@ -49,7 +49,7 @@ We tested LSD-SLAM on two different system configurations, using Ubuntu 12.04 (P
 ## 2.1 ROS fuerte + Ubuntu 12.04
 Install system dependencies:
 
-    sudo apt-get install ros-fuerte-libg2o liblapack-dev libblas-dev freeglut3-dev libqglviewer-qt4-dev libsuitesparse-dev
+    sudo apt-get install ros-fuerte-libg2o liblapack-dev libblas-dev freeglut3-dev libqglviewer-qt4-dev libsuitesparse-dev libx11-dev
 
 In your ROS package path, clone the repository:
 
@@ -78,7 +78,7 @@ For this you need to create a rosbuild workspace (if you don't have one yet), us
 
 Install system dependencies:
 
-    sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev libsuitesparse-dev
+    sudo apt-get install ros-indigo-libg2o ros-indigo-cv-bridge liblapack-dev libblas-dev freeglut3-dev libqglviewer-dev libsuitesparse-dev libx11-dev
 
 In your ROS package path, clone the repository:
 
@@ -162,7 +162,7 @@ This one is without radial distortion correction, as a special case of ATAN came
     width height
 
 
-#### Calibration File for OpenCV camera model [untested!]:
+#### Calibration File for OpenCV camera model:
 
     fx fy cx cy k1 k2 p1 p2
     inputWidth inputHeight
@@ -304,5 +304,28 @@ LSD-SLAM is licensed under the GNU General Public License Version 3 (GPLv3), see
 For commercial purposes, we also offer a professional version under different licencing terms.
 
 
+
+# 6 Troubleshoot / FAQ
+
+**How can I get the live-pointcloud in ROS to use with RVIZ?**
+
+You cannot, at least not on-line and in real-time. The reason is the following:
+
+In the background, LSD-SLAM continuously optimizes the pose-graph, i.e., the poses of all keyframes. Each time a keyframe's pose changes (which happens all the time, if only by a little bit), all points from this keyframe change their 3D position with it. Hence, you would have to continuously re-publish and re-compute the whole pointcloud (at 100k points per keyframe and up to 1000 keyframes for the longer sequences, that's 100 million points, i.e., ~1.6GB), which would crush real-time performance.
+
+Instead, this is solved in LSD-SLAM by publishing keyframes and their poses separately:
+- keyframeGraphMsg contains the updated pose of each keyframe, nothing else.
+- keyframeMsg contains one frame with it's pose, and - if it is a keyframe - it's points in the form of a depth map.
+
+Points are then always kept in their keyframe's coodinate system: That way, a keyframe's pose can be changed without even touching the points. In fact, in the viewer, the points in the keyframe's coodinate frame are moved to a GLBuffer immediately and never touched again - the only thing that changes is the pushed modelViewMatrix before rendering. 
+
+Note that "pose" always refers to a Sim3 pose (7DoF, including scale) - which ROS doesn't even have a message type for.
+
+If you need some other way in which the map is published (e.g. publish the whole pointcloud as ROS standard message as a service), the easiest is to implement your own Output3DWrapper.
+
+
+**Tracking immediately diverges / I keep getting "TRACKING LOST for frame 34 (0.00% good Points, which is -nan% of available points, DIVERGED)!"**
+- double-check your camera calibration.
+- try more translational movement and less roational movement
 
 

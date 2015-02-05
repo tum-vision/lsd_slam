@@ -516,12 +516,29 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 	for (int i = 0; i < 4; ++ i)
 		distCoeffs.at<float>(i, 0) = inputCalibration[4 + i];
 
+	if(inputCalibration[2] < 1.0f)
+	{
+		printf("WARNING: cx = %f < 1, which should not be the case for normal cameras.!\n", inputCalibration[2]);
+		printf("Possibly this is due to a recent change in the calibration file format, please see the README.md.\n");
+
+		inputCalibration[0] *= in_width;
+		inputCalibration[2] *= in_width;
+		inputCalibration[1] *= in_height;
+		inputCalibration[3] *= in_height;
+
+		printf("auto-changing calibration file to fx=%f, fy=%f, cx=%f, cy=%f\n",
+			inputCalibration[0],
+			inputCalibration[1],
+			inputCalibration[2],
+			inputCalibration[3]);
+	}
+
 	originalK_ = cv::Mat(3, 3, CV_64F, cv::Scalar(0));
-	originalK_.at<double>(0, 0) = inputCalibration[0] * in_width;
-	originalK_.at<double>(1, 1) = inputCalibration[1] * in_height;
+	originalK_.at<double>(0, 0) = inputCalibration[0];
+	originalK_.at<double>(1, 1) = inputCalibration[1];
 	originalK_.at<double>(2, 2) = 1;
-	originalK_.at<double>(0, 2) = inputCalibration[2] * in_width;
-	originalK_.at<double>(1, 2) = inputCalibration[3] * in_height;
+	originalK_.at<double>(0, 2) = inputCalibration[2];
+	originalK_.at<double>(1, 2) = inputCalibration[3];
 
 	if (valid)
 	{
