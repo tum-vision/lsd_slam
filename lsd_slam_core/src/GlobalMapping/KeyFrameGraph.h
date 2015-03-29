@@ -180,7 +180,7 @@ private:
 	g2o::SparseOptimizer graph;
 	
 	std::vector< Frame*, Eigen::aligned_allocator<Frame*> > newKeyframesBuffer;
-	std::vector< KFConstraintStruct*, Eigen::aligned_allocator<FramePoseStruct*> > newEdgeBuffer;
+	std::vector< KFConstraintStruct*, Eigen::aligned_allocator<KFConstraintStruct*> > newEdgeBuffer;
 
 
 	int nextEdgeId;

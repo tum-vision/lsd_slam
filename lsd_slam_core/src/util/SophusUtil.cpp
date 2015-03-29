@@ -32,9 +32,23 @@
 // compile a constructor variant for 4-component vectors, resulting in a
 // static assertion failure.
 
-
-template class Eigen::Quaternion<float>;
-template class Eigen::Quaternion<double>;
+// Poly: caused following error, so I commented out
+// /usr/local/include/eigen3/Eigen/src/Geometry/Quaternion.h:279:3: error: no matching function for call to 'conditional_aligned_free'
+//   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(IsAligned)
+//   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// /usr/local/include/eigen3/Eigen/src/Core/util/Memory.h:643:9: note: expanded from macro 'EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF'
+//         Eigen::internal::conditional_aligned_free<NeedsToAlign>(ptr); \
+//         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// /Users/poly/workspace/lsd_slam/lsd_slam_core/src/util/SophusUtil.cpp:37:23: note: in instantiation of member function
+//       'Eigen::Quaternion<double, 0>::operator delete' requested here
+// template class Eigen::Quaternion<double>;
+//                       ^
+// /usr/local/include/eigen3/Eigen/src/Core/util/Memory.h:315:34: note: candidate template ignored: invalid explicitly-specified argument for template
+//       parameter 'Align'
+// template<bool Align> inline void conditional_aligned_free(void *ptr)
+//                                  ^
+// template class Eigen::Quaternion<float>;
+// template class Eigen::Quaternion<double>;
 
 template class Sophus::SE3Group<float, 0>;
 template class Sophus::SE3Group<double, 0>;

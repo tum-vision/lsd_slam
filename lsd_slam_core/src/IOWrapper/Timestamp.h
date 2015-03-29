@@ -75,10 +75,10 @@ public:
 	static Timestamp now();
 	
 private:
-	std::chrono::monotonic_clock::time_point timePoint;
+	std::chrono::steady_clock::time_point timePoint;
 	std::chrono::system_clock::time_point systemTimePoint;
 	
-	static const std::chrono::monotonic_clock::time_point startupTimePoint;
+	static const std::chrono::steady_clock::time_point startupTimePoint;
 	static boost::mutex localtimeMutex;
 
 	double externalStamp;
