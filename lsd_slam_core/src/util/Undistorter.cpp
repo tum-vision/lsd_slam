@@ -482,12 +482,12 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 	// l3
 	if(l3 == "crop")
 	{
-		outputCalibration = -1;
+        outputCalibration[0] = -1;
 		printf("Out: Crop\n");
 	}
 	else if(l3 == "full")
 	{
-		outputCalibration = -2;
+        outputCalibration[0] = -2;
 		printf("Out: Full\n");
 	}
 	else if(l3 == "none")
@@ -495,6 +495,11 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 		printf("NO RECTIFICATION\n");
 		valid = false;
 	}
+    else if(std::sscanf(l3.c_str(), "%f %f %f %f %f", &outputCalibration[0], &outputCalibration[1], &outputCalibration[2], &outputCalibration[3], &outputCalibration[4]) == 5)
+    {
+        printf("Out: %f %f %f %f %f\n",
+                outputCalibration[0], outputCalibration[1], outputCalibration[2], outputCalibration[3], outputCalibration[4]);
+    }
 	else
 	{
 		printf("Out: Failed to Read Output pars... not rectifying.\n");
@@ -514,7 +519,7 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 	
 	cv::Mat distCoeffs = cv::Mat::zeros(4, 1, CV_32F);
 	for (int i = 0; i < 4; ++ i)
-		distCoeffs.at<float>(i, 0) = inputCalibration[4 + i];
+        distCoeffs.at<float>(i, 0) = outputCalibration[i];
 
 	if(inputCalibration[2] < 1.0f)
 	{
@@ -542,7 +547,7 @@ UndistorterOpenCV::UndistorterOpenCV(const char* configFileName)
 
 	if (valid)
 	{
-		K_ = cv::getOptimalNewCameraMatrix(originalK_, distCoeffs, cv::Size(in_width, in_height), (outputCalibration == -2) ? 1 : 0, cv::Size(out_width, out_height), nullptr, false);
+        K_ = cv::getOptimalNewCameraMatrix(originalK_, distCoeffs, cv::Size(in_width, in_height), (outputCalibration[0] == -2) ? 1 : 0, cv::Size(out_width, out_height), nullptr, false);
 		
 		cv::initUndistortRectifyMap(originalK_, distCoeffs, cv::Mat(), K_,
 				cv::Size(out_width, out_height), CV_16SC2, map1, map2);

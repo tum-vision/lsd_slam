@@ -229,7 +229,7 @@ private:
 	cv::Mat originalK_;
 	
 	float inputCalibration[10];
-	float outputCalibration;
+    float outputCalibration[5];
 	int out_width, out_height;
 	int in_width, in_height;
 	cv::Mat map1, map2;
