@@ -29,7 +29,7 @@ rosbuild_find_ros_package(dynamic_reconfigure)
 include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
 gencfg()
 
-
+find_package(OpenCV REQUIRED)
 
 
 
@@ -70,4 +70,4 @@ rosbuild_link_boost(viewer thread)
 
 
 rosbuild_add_executable(videoStitch src/main_stitchVideos.cpp)
-
+target_link_libraries(videoStitch ${OpenCV_LIBRARIES})
