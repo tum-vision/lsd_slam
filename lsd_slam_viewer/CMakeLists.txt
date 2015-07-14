@@ -150,6 +150,7 @@ target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 			     ${OPENGL_LIBRARIES}
 			     ${GLUT_LIBRARY}
 )
+add_dependencies(viewer lsd_slam_viewer_gencpp)
 
 #add_executable(videoStitch src/main_stitchVideos.cpp)
 #target_link_libraries(viewer ${QGLViewer_LIBRARIES}
