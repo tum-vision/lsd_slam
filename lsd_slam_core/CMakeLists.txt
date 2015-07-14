@@ -51,10 +51,15 @@ message("-- X11_LIBRARIES : " ${X11_LIBRARIES})
 
 # FabMap
 # uncomment this part to enable fabmap
-add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
-include_directories(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap/include)
-add_definitions("-DHAVE_FABMAP")
-set(FABMAP_LIB openFABMAP )
+if(WITH_FABMAP)
+  message("WITH_FABMAP: " ${WITH_FABMAP})
+  add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
+  include_directories(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap/include)
+  add_definitions("-DHAVE_FABMAP")
+  set(FABMAP_LIB openFABMAP )
+else()
+  message("WITH_FABMAP: " ${WITH_FABMAP})
+endif(WITH_FABMAP)
 
 generate_dynamic_reconfigure_options(
   cfg/LSDDebugParams.cfg
