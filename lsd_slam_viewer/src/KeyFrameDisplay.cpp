@@ -24,9 +24,15 @@
 #include <stdio.h>
 #include "settings.h"
 
-#include <GL/glx.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#ifdef __MACH__
+	//#include <GL/glx.h>
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#else
+	#include <GL/glx.h>
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
 
 #include "opencv2/opencv.hpp"
 

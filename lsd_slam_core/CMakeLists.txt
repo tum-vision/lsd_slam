@@ -10,6 +10,8 @@ project(lsd_slam_core)
 set(CMAKE_BUILD_TYPE Release)
 
 find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
+  #lsd_slam_viewer
   cv_bridge
   dynamic_reconfigure
   sensor_msgs
@@ -18,21 +20,46 @@ find_package(catkin REQUIRED COMPONENTS
   rosbag
 )
 
+find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(X11 REQUIRED)
 include(cmake/FindG2O.cmake)
 include(cmake/FindSuiteParse.cmake)
 
+#find csparse
+#FIND_PACKAGE(SuiteSparse)
+IF(CSPARSE_FOUND)
+MESSAGE(STATUS "CSPARSE FOUND")
+ELSE(CSPARSE_FOUND)
+MESSAGE(STATUS "CSPARSE NOT FOUND")
+ENDIF(CSPARSE_FOUND)
+
+#########################################################
+# FIND X11
+#########################################################
+find_package(X11)
+if(NOT X11_FOUND)
+	message(FATAL_ERROR "Failed to find X11")
+endif(NOT X11_FOUND)
+      
 message("-- CHOLMOD_INCLUDE_DIR : " ${CHOLMOD_INCLUDE_DIR})
 message("-- CSPARSE_INCLUDE_DIR : " ${CSPARSE_INCLUDE_DIR})
 message("-- G2O_INCLUDE_DIR : " ${G2O_INCLUDE_DIR})
+message("-- EIGEN3_INCLUDE_DIR : " ${EIGEN3_INCLUDE_DIR})
+message("-- EIGEN_INCLUDE_DIR : " ${EIGEN_INCLUDE_DIR})
+message("-- X11_LIBRARIES : " ${X11_LIBRARIES})
 
 # FabMap
 # uncomment this part to enable fabmap
-#add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
-#include_directories(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap/include)
-#add_definitions("-DHAVE_FABMAP")
-#set(FABMAP_LIB openFABMAP )
+if(WITH_FABMAP)
+  message("WITH_FABMAP: " ${WITH_FABMAP})
+  add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
+  include_directories(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap/include)
+  add_definitions("-DHAVE_FABMAP")
+  set(FABMAP_LIB openFABMAP )
+else()
+  message("WITH_FABMAP: " ${WITH_FABMAP})
+endif(WITH_FABMAP)
 
 generate_dynamic_reconfigure_options(
   cfg/LSDDebugParams.cfg
@@ -42,7 +69,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
   LIBRARIES lsdslam
   DEPENDS Eigen SuiteSparse
-  CATKIN_DEPENDS libg2o 
+  CATKIN_DEPENDS libg2o #lsd_slam_viewer
 )
 
 # SSE flags
@@ -51,8 +78,8 @@ add_definitions("-DENABLE_SSE")
 
 # Also add some useful compiler flag
 set(CMAKE_CXX_FLAGS
-   "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
-) 
+  "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
+)
 
 # Set source files
 set(lsd_SOURCE_FILES
@@ -87,7 +114,9 @@ set(SOURCE_FILES
 
 include_directories(
   include
+  ${EIGEN_INCLUDE_DIR}
   ${EIGEN3_INCLUDE_DIR}
+  ${X11_INCLUDE_DIR}
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
   ${CSPARSE_INCLUDE_DIR} #Has been set by SuiteParse
@@ -97,7 +126,8 @@ include_directories(
 
 # build shared library.
 add_library(lsdslam SHARED ${SOURCE_FILES})
-target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} csparse cxsparse )
+target_link_libraries(lsdslam ${FABMAP_LIB} ${G2O_LIBRARIES} ${catkin_LIBRARIES} ${CSPARSE_LIBRARY} ${X11_LIBRARIES}) 
+#csparse cxsparse )
 #rosbuild_link_boost(lsdslam thread)
 
 
