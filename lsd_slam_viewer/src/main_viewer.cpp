@@ -152,6 +152,8 @@ void rosFileLoop( int argc, char** argv )
 int main( int argc, char** argv )
 {
 
+	int i;
+	int containsBagFile = false;
 
 	printf("Started QApplication thread\n");
 	// Read command lines arguments.
@@ -173,7 +175,13 @@ int main( int argc, char** argv )
 
 	boost::thread rosThread;
 
-	if(argc > 1)
+	for (i=1; i< argc; i++) {
+		if(strstr(argv[i], ".bag") != NULL) {
+			containsBagFile = true;
+		}
+ 	}
+
+    if(containsBagFile == true)
 	{
 		rosThread = boost::thread(rosFileLoop, argc, argv);
 	}
