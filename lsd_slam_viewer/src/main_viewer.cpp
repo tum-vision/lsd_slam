@@ -153,10 +153,10 @@ int main( int argc, char** argv )
 {
 
 	int i;
-	int containsBagFile = false;
+    bool containsBagFile = false;
 
 	printf("Started QApplication thread\n");
-	// Read command lines arguments.
+    // Read command lines arguments.
 	QApplication application(argc,argv);
 
 	// Instantiate the viewer.
