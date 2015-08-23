@@ -96,16 +96,16 @@ void ROSOutput3DWrapper::publishKeyframe(Frame* f)
 
 	const float* idepth = f->idepth(publishLvl);
 	const float* idepthVar = f->idepthVar(publishLvl);
-	const float* color = f->image(publishLvl);
+	const float* color = f->imageRGB(publishLvl);
 
-	for(int idx=0;idx < w*h; idx++)
+	for(int idx=0,idxRGB=0;idx < w*h; idx++,idxRGB+=3)
 	{
 		pc[idx].idepth = idepth[idx];
 		pc[idx].idepth_var = idepthVar[idx];
-		pc[idx].color[0] = color[idx];
-		pc[idx].color[1] = color[idx];
-		pc[idx].color[2] = color[idx];
-		pc[idx].color[3] = color[idx];
+		pc[idx].color[2] = color[idxRGB];
+		pc[idx].color[1] = color[idxRGB+1];
+		pc[idx].color[0] = color[idxRGB+2];
+		pc[idx].color[3] = 100;
 	}
 
 	keyframe_publisher.publish(fMsg);

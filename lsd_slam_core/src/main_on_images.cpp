@@ -245,7 +245,7 @@ int main( int argc, char** argv )
 		assert(imageRGB.type() == CV_8UC3);
 
 		if(runningIDX == 0)
-			system->randomInit(image.data, fakeTimeStamp, runningIDX);
+			system->randomInit(image.data, imageRGB.data, fakeTimeStamp, runningIDX);
 		else
 			system->trackFrame(image.data, imageRGB.data, runningIDX ,hz == 0,fakeTimeStamp);
 		runningIDX++;

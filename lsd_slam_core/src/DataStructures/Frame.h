@@ -101,6 +101,7 @@ public:
 	inline double timestamp() const;
 	
 	inline float* image(int level = 0);
+	inline float* imageRGB(int level = 0);
 	inline const Eigen::Vector4f* gradients(int level = 0);
 	inline const float* maxGradients(int level = 0);
 	inline bool hasIDepthBeenSet() const;
@@ -361,6 +362,10 @@ inline float* Frame::image(int level)
 	if (! data.imageValid[level])
 		require(IMAGE, level);
 	return data.image[level];
+}
+inline float* Frame::imageRGB(int level)
+{
+	return data.imageRGB[level];
 }
 inline const Eigen::Vector4f* Frame::gradients(int level)
 {
