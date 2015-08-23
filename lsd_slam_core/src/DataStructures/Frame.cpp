@@ -31,6 +31,35 @@ int privateFrameAllocCount = 0;
 
 
 
+Frame::Frame(int id, int width, int height, const Eigen::Matrix3f& K, double timestamp, const unsigned char* image,  const unsigned char* rgbImage)
+{
+	initialize(id, width, height, K, timestamp);
+
+	data.image[0] = FrameMemory::getInstance().getFloatBuffer(data.width[0]*data.height[0]);
+	data.imageRGB[0] = FrameMemory::getInstance().getFloatBuffer(data.width[0]*data.height[0]*3);
+
+	float* maxPt = data.image[0] + data.width[0]*data.height[0];
+	float* maxPtRGB = data.imageRGB[0] + data.width[0]*data.height[0]*3;
+
+	for(float* pt = data.image[0]; pt < maxPt; pt++)
+	{
+		*pt = *image;
+		image++;
+	}
+	for(float* pt = data.imageRGB[0]; pt < maxPtRGB; pt++)
+	{
+		*pt = *rgbImage;
+		rgbImage++;
+	}
+
+	data.imageValid[0] = true;
+
+	privateFrameAllocCount++;
+
+	if(enablePrintDebugInfo && printMemoryDebugInfo)
+		printf("ALLOCATED frame %d, now there are %d\n", this->id(), privateFrameAllocCount);
+
+}
 
 Frame::Frame(int id, int width, int height, const Eigen::Matrix3f& K, double timestamp, const unsigned char* image)
 {
