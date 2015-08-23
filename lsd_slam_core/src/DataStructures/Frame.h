@@ -44,6 +44,7 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	friend class FrameMemory;
 
+	Frame(int id, int width, int height, const Eigen::Matrix3f& K, double timestamp, const unsigned char* image, const unsigned char* rgbImage);
 
 	Frame(int id, int width, int height, const Eigen::Matrix3f& K, double timestamp, const unsigned char* image);
 
@@ -242,6 +243,7 @@ private:
 
 		
 		float* image[PYRAMID_LEVELS];
+		float* imageRGB[PYRAMID_LEVELS];
 		bool imageValid[PYRAMID_LEVELS];
 		
 		Eigen::Vector4f* gradients[PYRAMID_LEVELS];
