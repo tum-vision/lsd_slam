@@ -27,13 +27,13 @@ find_package(OpenGL REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 set(QT_USE_QTXML TRUE)
 find_package(QGLViewer REQUIRED)
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 
 include_directories(${QGLVIEWER_INCLUDE_DIR}
 		    ${catkin_INCLUDE_DIRS} 
-		    ${EIGEN_INCLUDE_DIR}
+		    ${EIGEN3_INCLUDE_DIR}
 		    ${QT_INCLUDES} )
 
 # SSE flags
