@@ -2,7 +2,7 @@
 * This file is part of LSD-SLAM.
 *
 * Copyright 2013 Jakob Engel <engelj at in dot tum dot de> (Technical University of Munich)
-* For more information see <http://vision.in.tum.de/lsdslam> 
+* For more information see <http://vision.in.tum.de/lsdslam>
 *
 * LSD-SLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,10 @@
 #include "unordered_set"
 #include "util/settings.h"
 
+#ifdef __clang__
+#define isnanf(x) isnan(x)
+#endif
+
 
 namespace lsd_slam
 {
@@ -49,32 +53,32 @@ public:
 
 	Frame(int id, int width, int height, const Eigen::Matrix3f& K, double timestamp, const float* image);
 
-	~Frame();
-	
-	
+	~Frame() throw();
+
+
 	/** Sets or updates idepth and idepthVar on level zero. Invalidates higher levels. */
 	void setDepth(const DepthMapPixelHypothesis* newDepth);
 
 	/** Calculates mean information for statistical purposes. */
 	void calculateMeanInformation();
-	
+
 	/** Sets ground truth depth (real, not inverse!) from a float array on level zero. Invalidates higher levels. */
 	void setDepthFromGroundTruth(const float* depth, float cov_scale = 1.0f);
-	
+
 	/** Prepares this frame for stereo comparisons with the other frame (computes some intermediate values that will be needed) */
 	void prepareForStereoWith(Frame* other, Sim3 thisToOther, const Eigen::Matrix3f& K, const int level);
 
-	
+
 
 	// Accessors
 	/** Returns the unique frame id. */
 	inline int id() const;
-	
+
 	/** Returns the frame's image width. */
 	inline int width(int level = 0) const;
 	/** Returns the frame's image height. */
 	inline int height(int level = 0) const;
-	
+
 	/** Returns the frame's intrinsics matrix. */
 	inline const Eigen::Matrix3f& K(int level = 0) const;
 	/** Returns the frame's inverse intrinsics matrix. */
@@ -95,10 +99,10 @@ public:
 	inline float cxInv(int level = 0) const;
 	/** Returns KInv(1, 2). */
 	inline float cyInv(int level = 0) const;
-	
+
 	/** Returns the frame's recording timestamp. */
 	inline double timestamp() const;
-	
+
 	inline float* image(int level = 0);
 	inline const Eigen::Vector4f* gradients(int level = 0);
 	inline const float* maxGradients(int level = 0);
@@ -123,10 +127,10 @@ public:
 		IDEPTH			= 1<<3,
 		IDEPTH_VAR		= 1<<4,
 		REF_ID			= 1<<5,
-		
+
 		ALL = IMAGE | GRADIENTS | MAX_GRADIENTS | IDEPTH | IDEPTH_VAR | REF_ID
 	};
-	
+
 
 	void setPermaRef(TrackingReference* reference);
 	void takeReActivationData(DepthMapPixelHypothesis* depthMap);
@@ -161,7 +165,7 @@ public:
 
 	/** Multi-Map indicating for which other keyframes with which initialization tracking failed.*/
 	std::unordered_multimap< Frame*, Sim3, std::hash<Frame*>, std::equal_to<Frame*>,
-		Eigen::aligned_allocator< std::pair<const Frame*,Sim3> > > trackingFailed;
+		Eigen::aligned_allocator< std::pair<Frame* const,Sim3> > > trackingFailed;
 
 
 	// flag set when depth is updated.
@@ -212,44 +216,44 @@ private:
 
 	void initialize(int id, int width, int height, const Eigen::Matrix3f& K, double timestamp);
 	void setDepth_Allocate();
-	
+
 	void buildImage(int level);
 	void releaseImage(int level);
-	
+
 	void buildGradients(int level);
 	void releaseGradients(int level);
-	
+
 	void buildMaxGradients(int level);
 	void releaseMaxGradients(int level);
-	
+
 	void buildIDepthAndIDepthVar(int level);
 	void releaseIDepth(int level);
 	void releaseIDepthVar(int level);
-	
+
 	void printfAssert(const char* message) const;
-	
+
 	struct Data
 	{
 		int id;
-		
+
 		int width[PYRAMID_LEVELS], height[PYRAMID_LEVELS];
 
 		Eigen::Matrix3f K[PYRAMID_LEVELS], KInv[PYRAMID_LEVELS];
 		float fx[PYRAMID_LEVELS], fy[PYRAMID_LEVELS], cx[PYRAMID_LEVELS], cy[PYRAMID_LEVELS];
 		float fxInv[PYRAMID_LEVELS], fyInv[PYRAMID_LEVELS], cxInv[PYRAMID_LEVELS], cyInv[PYRAMID_LEVELS];
-		
+
 		double timestamp;
 
-		
+
 		float* image[PYRAMID_LEVELS];
 		bool imageValid[PYRAMID_LEVELS];
-		
+
 		Eigen::Vector4f* gradients[PYRAMID_LEVELS];
 		bool gradientsValid[PYRAMID_LEVELS];
-		
+
 		float* maxGradients[PYRAMID_LEVELS];
 		bool maxGradientsValid[PYRAMID_LEVELS];
-		
+
 
 		bool hasIDepthBeenSet;
 
@@ -257,7 +261,7 @@ private:
 		// a pixel is valid iff idepthVar[i] > 0.
 		float* idepth[PYRAMID_LEVELS];
 		bool idepthValid[PYRAMID_LEVELS];
-		
+
 		// MUST contain -1 for invalid pixel (that dont have depth)!!
 		float* idepthVar[PYRAMID_LEVELS];
 		bool idepthVarValid[PYRAMID_LEVELS];

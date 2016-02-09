@@ -2,7 +2,7 @@
 * This file is part of LSD-SLAM.
 *
 * Copyright 2013 Jakob Engel <engelj at in dot tum dot de> (Technical University of Munich)
-* For more information see <http://vision.in.tum.de/lsdslam> 
+* For more information see <http://vision.in.tum.de/lsdslam>
 *
 * LSD-SLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -93,13 +93,13 @@ public:
 
 	/** Constructs an empty pose graph. */
 	KeyFrameGraph();
-	
+
 	/** Deletes the g2o graph. */
 	~KeyFrameGraph();
-	
+
 	/** Adds a new KeyFrame to the graph. */
 	void addKeyFrame(Frame* frame);
-	
+
 	/** Adds a new Frame to the graph. Doesnt actually keep the frame, but only it's pose-struct. */
 	void addFrame(Frame* frame);
 
@@ -107,27 +107,27 @@ public:
 
 	/**
 	 * Adds a new constraint to the graph.
-	 * 
+	 *
 	 * The transformation must map world points such that they move as if
 	 * attached to a frame which moves from firstFrame to secondFrame:
 	 * second->camToWorld * first->worldToCam * point
-	 * 
+	 *
 	 * If isOdometryConstraint is set, scaleInformation is ignored.
 	 */
 	void insertConstraint(KFConstraintStruct* constraint);
 
-	
+
 	/** Optimizes the graph. Does not update the keyframe poses,
 	 *  only the vertex poses. You must call updateKeyFramePoses() afterwards. */
 	int optimize(int num_iterations);
 	bool addElementsFromBuffer();
 
-	
+
 	/**
 	 * Creates a hash map of keyframe -> distance to given frame.
 	 */
 	void calculateGraphDistancesToFrame(Frame* frame, std::unordered_map<Frame*, int>* distanceMap);
-	
+
 
 
 	int totalPoints;
@@ -178,9 +178,9 @@ private:
 
 	/** Pose graph representation in g2o */
 	g2o::SparseOptimizer graph;
-	
+
 	std::vector< Frame*, Eigen::aligned_allocator<Frame*> > newKeyframesBuffer;
-	std::vector< KFConstraintStruct*, Eigen::aligned_allocator<FramePoseStruct*> > newEdgeBuffer;
+	std::vector< KFConstraintStruct*, Eigen::aligned_allocator<KFConstraintStruct*> > newEdgeBuffer;
 
 
 	int nextEdgeId;
