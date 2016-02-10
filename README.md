@@ -43,8 +43,9 @@ and one window showing the 3D map (from viewer). If for some reason the initiali
 
 
 # 2. Installation
-We tested LSD-SLAM on three different system configurations, using Ubuntu 12.04 (Precise) and ROS fuerte, Ubuntu 14.04 (trusty) and ROS indigo,
-and MacOSX Yosemite. Since ROS is used for input and output, the stand-alone build does not install any front-end executable programs.
+We tested LSD-SLAM on four different system configurations, using Ubuntu 12.04 (Precise) and ROS fuerte, Ubuntu 14.04 (trusty) and ROS indigo,
+Ubuntu 14.04 stand-alone, and MacOSX Yosemite stand-alone. Since ROS is used for input and output, the stand-alone builds do not install any 
+front-end executable programs.
 
 
 ## 2.1 ROS fuerte + Ubuntu 12.04
@@ -93,7 +94,8 @@ Compile the two package by typing:
 
 
 ## 2.3 Stand-alone CMake build
-Install system-wide dependencies through your package manager (brew, apt-get - as above, but omitting ros-related packages) or manually.
+Install system-wide dependencies through your package manager (brew, apt-get - as above, but omitting ros-related packages) or 
+manually. The command to install dependencies with Homebrew (http://brew.sh) is given below.
 
     brew install eigen suite-sparse opencv cmake
 
@@ -103,7 +105,7 @@ Clone and build g2o in the directory of your choice.
     cd g2o
     mkdir build
     cd build
-    cmake -DCMAKE_INSTALL_PATH=../install
+    cmake -DCMAKE_INSTALL_PREFIX=../install
     make -j8
     make install
 
