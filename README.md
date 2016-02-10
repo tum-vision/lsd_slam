@@ -43,7 +43,9 @@ and one window showing the 3D map (from viewer). If for some reason the initiali
 
 
 # 2. Installation
-We tested LSD-SLAM on two different system configurations, using Ubuntu 12.04 (Precise) and ROS fuerte, or Ubuntu 14.04 (trusty) and ROS indigo. Note that building without ROS is not supported, however ROS is only used for input and output, facilitating easy portability to other platforms.
+We tested LSD-SLAM on four different system configurations, using Ubuntu 12.04 (Precise) and ROS fuerte, Ubuntu 14.04 (trusty) and ROS indigo,
+Ubuntu 14.04 stand-alone, and MacOSX Yosemite stand-alone. Since ROS is used for input and output, the stand-alone builds do not install any 
+front-end executable programs.
 
 
 ## 2.1 ROS fuerte + Ubuntu 12.04
@@ -91,9 +93,37 @@ Compile the two package by typing:
 
 
 
+## 2.3 Stand-alone CMake build
+Install system-wide dependencies through your package manager (brew, apt-get - as above, but omitting ros-related packages) or 
+manually. The command to install dependencies with Homebrew (http://brew.sh) is given below.
+
+    brew install eigen suite-sparse opencv cmake
+
+Clone and build g2o in the directory of your choice.
+
+    git clone https://github.com/RainerKuemmerle/g2o
+    cd g2o
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=../install
+    make -j8
+    make install
+
+Continue as you would for any other cmake build. The only difference is that you will only build lsd_slam_core, and that you will
+probably have to provide the BUILD_WITHOUT_ROS, EXTRA_LIB_DIRS, and EXTRA_INCLUDE_DIRS variables to cmake.
+
+    git clone https://github.com/tum-vision/lsd_slam.git lsd_slam
+    cd lsd_slam/lsd_slam_core
+    mkdir build
+    cd build
+    cmake -DEXTRA_LIB_DIRS=/path/to/g2o/lib/ -DEXTRA_INCLUDE_DIRS=/path/to/g2o/include -DBUILD_WITHOUT_ROS=ON ../
+    make -j8
+
+Please note that this process only builds the lsd_slam library, and no programs with which you can test it. This build method could be 
+useful in integrating lsd_slam with other projects.
 
 
-## 2.3 openFabMap for large loop-closure detection [optional]
+## 2.4 openFabMap for large loop-closure detection [optional]
 If you want to use openFABMAP for large loop closure detection, uncomment the following lines in `lsd_slam_core/CMakeLists.txt` :
 
     #add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/openFabMap)
