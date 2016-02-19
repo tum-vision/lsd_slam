@@ -691,7 +691,6 @@ float SE3Tracker::calcWeightsAndResidualNEON(
 			"bne      .loopcalcWeightsAndResidualNEON     \n\t"
 				
 			"vstmia   %[sum_vector], {q15}                \n\t"
-
 		: /* outputs */ [buf_warped_z]"+&r"(cur_buf_warped_z),
 						[buf_warped_x]"+&r"(cur_buf_warped_x),
 						[buf_warped_y]"+&r"(cur_buf_warped_y),
@@ -708,7 +707,7 @@ float SE3Tracker::calcWeightsAndResidualNEON(
 		: /* clobber */ "memory", "cc",
 						"q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15"
 		);
-		
+
 		sumRes += sum_vector[0] + sum_vector[1] + sum_vector[2] + sum_vector[3];
 	}
 #endif

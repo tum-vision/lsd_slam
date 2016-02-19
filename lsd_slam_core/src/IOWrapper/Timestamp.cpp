@@ -29,7 +29,7 @@ namespace lsd_slam
 {
 
 
-const std::chrono::monotonic_clock::time_point Timestamp::startupTimePoint = std::chrono::monotonic_clock::now();
+const std::chrono::steady_clock::time_point Timestamp::startupTimePoint = std::chrono::steady_clock::now();
 boost::mutex Timestamp::localtimeMutex;
 
 Timestamp::Timestamp()
@@ -71,7 +71,7 @@ double Timestamp::secondsUntil(const Timestamp& other) const
 Timestamp Timestamp::now()
 {
 	Timestamp result;
-	result.timePoint = std::chrono::monotonic_clock::now();
+	result.timePoint = std::chrono::steady_clock::now();
 	result.systemTimePoint = std::chrono::system_clock::now();
 	return result;
 }

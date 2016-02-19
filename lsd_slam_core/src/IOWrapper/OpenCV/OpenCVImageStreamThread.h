@@ -15,33 +15,47 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with dvo. If not, see <http://www.gnu.org/licenses/>.
+* along with LSD-SLAM. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "settings.h"
+#pragma once
+
+#include "IOWrapper/NotifyBuffer.h"
+#include "IOWrapper/TimestampedObject.h"
+#include "IOWrapper/InputImageStream.h"
+
+#include "util/Undistorter.h"
+
+
+namespace lsd_slam
+{
 
 
 
-// new:
-float pointTesselation = 1;
-float lineTesselation = 2;
+/**
+ * Image stream provider using OpenCV messages.
+ */
+class OpenCVImageStreamThread : public InputImageStream
+{
+public:
+	OpenCVImageStreamThread();
+	~OpenCVImageStreamThread();
+	
+	/**
+	 * Starts the thread.
+	 */
+	void run();
+	
+	void setCalibration(std::string file);
 
-bool keepInMemory=true;
-bool showKFCameras = true;
-bool showKFPointclouds = true;
-bool showConstraints = true;
-bool showCurrentCamera = true;
-bool showCurrentPointcloud = true;
+	/**
+	 * Thread main function.
+	 */
+	void operator()();
+	
+private:
+	bool haveCalib;
+	Undistorter* undistorter;
+};
 
-float scaledDepthVarTH = 1;
-float absDepthVarTH = 1;
-int minNearSupport = 5;
-int cutFirstNKf = 5;
-int sparsifyFactor = 1;
-
-bool saveAllVideo = false;
-
-int numRefreshedAlready = 0;
-
-// cut-off after this
-double lastFrameTime = 1e15;
+}

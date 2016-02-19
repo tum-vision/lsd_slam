@@ -191,7 +191,7 @@ bool DepthMap::makeAndCheckEPL(const int x, const int y, const Frame* const ref,
 	float epx = - fx * ref->thisToOther_t[0] + ref->thisToOther_t[2]*(x - cx);
 	float epy = - fy * ref->thisToOther_t[1] + ref->thisToOther_t[2]*(y - cy);
 
-	if(isnanf(epx+epy))
+	if(isnan(epx+epy))
 		return false;
 
 
@@ -981,7 +981,7 @@ void DepthMap::initializeFromGTDepth(Frame* new_frame)
 		for(int x=0;x<width;x++)
 		{
 			float idepthValue = idepth[x+y*width];
-			if(!isnanf(idepthValue) && idepthValue > 0)
+			if(!isnan(idepthValue) && idepthValue > 0)
 			{
 				averageGTIDepthSum += idepthValue;
 				averageGTIDepthNum ++;
@@ -996,7 +996,7 @@ void DepthMap::initializeFromGTDepth(Frame* new_frame)
 		{
 			float idepthValue = idepth[x+y*width];
 			
-			if(!isnanf(idepthValue) && idepthValue > 0)
+			if(!isnan(idepthValue) && idepthValue > 0)
 			{
 				currentDepthMap[x+y*width] = DepthMapPixelHypothesis(
 						idepthValue,
@@ -1507,7 +1507,7 @@ inline float DepthMap::doLineStereo(
 
 
 	// check for nan due to eg division by zero.
-	if(isnanf((float)(pFar[0]+pClose[0])))
+	if(isnan((float)(pFar[0]+pClose[0])))
 		return -4;
 
 	// calculate increments in which we will step through the epipolar line.
