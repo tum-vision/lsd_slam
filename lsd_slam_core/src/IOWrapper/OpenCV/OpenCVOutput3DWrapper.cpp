@@ -20,6 +20,19 @@
 
 #include "OpenCVOutput3DWrapper.h"
 #include "util/settings.h"
+#include "util/SophusUtil.h"
+
+#include "DataStructures/Frame.h"
+#include "GlobalMapping/KeyFrameGraph.h"
+#include "sophus/sim3.hpp"
+#include "GlobalMapping/g2oTypeSim3Sophus.h"
+
+#include <boost/thread.hpp>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <stdio.h>
+
 
 namespace lsd_slam
 {
@@ -31,6 +44,7 @@ OpenCVOutput3DWrapper::OpenCVOutput3DWrapper(int width, int height)
 	this->height = height;
 
 	publishLvl=0;
+
 }
 
 OpenCVOutput3DWrapper::~OpenCVOutput3DWrapper()
@@ -40,6 +54,11 @@ OpenCVOutput3DWrapper::~OpenCVOutput3DWrapper()
 
 void OpenCVOutput3DWrapper::publishKeyframe(Frame* f)
 {
+	float camToWorldData[7];
+	boost::shared_lock<boost::shared_mutex> lock = f->getActiveLock();
+	memcpy(camToWorldData,f->getScaledCamToWorld().cast<float>().data(),sizeof(float)*7);
+	// printf( "Kf pose is: X: %.3f Y: %.3f Z: %.3f\n", camToWorldData[0], camToWorldData[1], camToWorldData[2] );
+
 	// lsd_slam_viewer::keyframeMsg fMsg;
 
 
@@ -82,8 +101,35 @@ void OpenCVOutput3DWrapper::publishKeyframe(Frame* f)
 	// keyframe_publisher.publish(fMsg);
 }
 
-void OpenCVOutput3DWrapper::publishTrackedFrame(Frame* kf)
+void OpenCVOutput3DWrapper::publishTrackedFrame(Frame* f)
 {
+	boost::shared_lock<boost::shared_mutex> lock = f->getActiveLock();
+	Sim3 camToWorld = f->getScaledCamToWorld();
+	Eigen::Matrix3d R = camToWorld.rotationMatrix();
+	Eigen::Quaterniond q = camToWorld.quaternion();
+	double s = camToWorld.scale();
+	Eigen::Vector3d t = camToWorld.translation();
+	q.normalize();
+	Eigen::Quaterniond q_ = q.conjugate();
+	Eigen::Vector3d t_ = -q_._transformVector(t);
+
+	static unsigned int i = 0;
+	if ( i++ % 40 == 0 ) {
+		
+		printf( "current pose is: X: %.3f Y: %.3f Z: %.3f\n", t(0), t(1), t(2) );
+		printf( "qx: %.3f qy: %.3f qz: %.3f qw %.3f\n", q_.x(), q_.y(), q_.z(), q_.w() );
+		Eigen::Vector3d x(1, 0, 0);
+		Eigen::Vector3d y(0, 1, 0);
+		Eigen::Vector3d z(0, 0, 1);
+		x = q._transformVector(x);
+		y = q._transformVector(y);
+		z = q._transformVector(z);
+		printf( "x axis is: X: %.3f Y: %.3f Z: %.3f\n", x(0), x(1), x(2) );
+		printf( "y axis is: X: %.3f Y: %.3f Z: %.3f\n", y(0), y(1), y(2) );
+		printf( "z axis is: X: %.3f Y: %.3f Z: %.3f\n", z(0), z(1), z(2) );
+		printf( "scale: %.3f\n", s );
+	}
+
 	// lsd_slam_viewer::keyframeMsg fMsg;
 
 

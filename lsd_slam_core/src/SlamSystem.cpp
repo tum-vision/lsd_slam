@@ -680,7 +680,7 @@ void SlamSystem::debugDisplayDepthMap()
 			keyFrameGraph->totalVertices,
 			(int)keyFrameGraph->edgesAll.size(),
 			1e-6 * (float)keyFrameGraph->totalPoints);
-
+	// printf("Tracking: %s\n%s\n",buf1, buf2); // Print debug info to terminal instead of on image
 
 	if(onSceenInfoDisplay)
 		printMessageOnCVImage(map->debugImageDepth, buf1, buf2);

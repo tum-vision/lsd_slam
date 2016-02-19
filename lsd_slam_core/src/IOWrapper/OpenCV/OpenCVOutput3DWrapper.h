@@ -81,5 +81,6 @@ public:
 	
 private:
 	int width, height;
+	FILE *gnuplot;
 };
 }

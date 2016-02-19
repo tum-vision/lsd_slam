@@ -28,23 +28,25 @@
 
 #include "IOWrapper/OpenCV/OpenCVImageStreamThread.h"
 #include "IOWrapper/OpenCV/OpenCVOutput3DWrapper.h"
+#include "IOWrapper/ImageDisplay.h"
 
-// #include <X11/Xlib.h>
+
+#include <X11/Xlib.h>
 
 using namespace lsd_slam;
 int main( int argc, char** argv )
 {
+	XInitThreads();
+
 	InputImageStream* inputStream = new OpenCVImageStreamThread();
 
-	std::string calibFile;
-	// if(ros::param::get("~calib", calibFile))
-	// {
-	// 	ros::param::del("~calib");
-	// 	inputStream->setCalibration(calibFile);
-	// }
-	// else
-		inputStream->setCalibration("");
+	inputStream->setCalibration("calib.txt");
 	inputStream->run();
+
+	cv::Mat tmp(240,320, CV_8UC3, cv::Scalar(0,0,255));
+	Util::displayImage( "DebugWindow DEPTH", tmp, false );
+
+	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	Output3DWrapper* outputWrapper = new OpenCVOutput3DWrapper(inputStream->width(), inputStream->height());
 	LiveSLAMWrapper slamNode(inputStream, outputWrapper);

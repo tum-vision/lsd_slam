@@ -28,13 +28,22 @@ find_package(Boost REQUIRED COMPONENTS thread system)
 #add_definitions("-DHAVE_FABMAP")
 #set(FABMAP_LIB openFABMAP )
 
+
 # SSE flags
-add_definitions("-DENABLE_SSE")
+#add_definitions("-DENABLE_SSE")
+
+# Also add some useful compiler flag
+#set(CMAKE_CXX_FLAGS
+#   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native  -std=c++0x"
+#)
+
+# NEON flags
+add_definitions("-DENABLE_NEON")
 
 # Also add some useful compiler flag
 set(CMAKE_CXX_FLAGS
-   "${CMAKE_CXX_FLAGS} ${SSE_FLAGS} -march=native  -std=c++0x"
-) 
+   "${CMAKE_CXX_FLAGS} -O2 -march=native -mfpu=neon -std=c++0x"
+)  
 
 # Set source files
 set(lsd_SOURCE_FILES
@@ -96,4 +105,4 @@ target_link_libraries(lsdslam ${FABMAP_LIB} g2o_core g2o_stuff cxsparse g2o_solv
 
 # build image node
 add_executable(opencv_slam src/main_opencv.cpp)
-target_link_libraries(opencv_slam lsdslam)
+target_link_libraries(opencv_slam lsdslam X11)

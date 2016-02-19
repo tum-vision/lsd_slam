@@ -90,7 +90,7 @@ bool useAffineLightningEstimation = true;
 
 
 bool useFabMap = false;
-bool doSlam = true;
+bool doSlam = false;//true;
 bool doKFReActivation = true;
 bool doMapping = true;
 
@@ -154,6 +154,20 @@ void handleKey(char k)
 	case 'l': case 'L':
 		printf("Manual Tracking Loss Indicated!\n");
 		manualTrackingLossIndicated = true;
+		break;
+	case 'j': case 'J':
+		if (doSlam)
+		{
+			printf("Turning on SLAM, will reset!\n");
+			doSlam = false;
+			fullResetRequested = true;
+		}
+		else
+		{
+			printf("Turning off SLAM, will reset!\n");
+			doSlam = true;
+			fullResetRequested = true;
+		}
 		break;
 	}
 

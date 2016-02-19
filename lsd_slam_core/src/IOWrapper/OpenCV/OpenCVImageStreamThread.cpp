@@ -22,6 +22,7 @@
 
 #include <boost/thread.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "util/settings.h"
 
@@ -39,7 +40,8 @@ OpenCVImageStreamThread::OpenCVImageStreamThread()
 {
 
 	// wait for cam calib
-	width_ = height_ = 0;
+	width_ = height_ = fx_ = fy_ = cx_ = cy_ = 0;
+
 
 	// imagebuffer
 	imageBuffer = new NotifyBuffer<TimestampedMat>(8);
@@ -55,37 +57,22 @@ OpenCVImageStreamThread::~OpenCVImageStreamThread()
 
 void OpenCVImageStreamThread::setCalibration(std::string file)
 {
-	// if(file == "")
-	// {
-	// 	ros::Subscriber info_sub         = nh_.subscribe(nh_.resolveName("camera_info"),1, &ROSImageStreamThread::infoCb, this);
 
-	// 	printf("WAITING for ROS camera calibration!\n");
-	// 	while(width_ == 0)
-	// 	{
-	// 		ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.03));
-	// 	}
-	// 	printf("RECEIVED ROS camera calibration!\n");
+	undistorter = Undistorter::getUndistorterForFile(file.c_str());
 
-	// 	info_sub.shutdown();
-	// }
-	// else
-	// {
-	// 	undistorter = Undistorter::getUndistorterForFile(file.c_str());
+	if(undistorter==0)
+	{
+		printf("Failed to read camera calibration from file... wrong syntax?\n");
+		exit(0);
+	}
 
-	// 	if(undistorter==0)
-	// 	{
-	// 		printf("Failed to read camera calibration from file... wrong syntax?\n");
-	// 		exit(0);
-	// 	}
+	fx_ = undistorter->getK().at<double>(0, 0);
+	fy_ = undistorter->getK().at<double>(1, 1);
+	cx_ = undistorter->getK().at<double>(2, 0);
+	cy_ = undistorter->getK().at<double>(2, 1);
 
-	// 	fx_ = undistorter->getK().at<double>(0, 0);
-	// 	fy_ = undistorter->getK().at<double>(1, 1);
-	// 	cx_ = undistorter->getK().at<double>(2, 0);
-	// 	cy_ = undistorter->getK().at<double>(2, 1);
-
-	// 	width_ = undistorter->getOutputWidth();
-	// 	height_ = undistorter->getOutputHeight();
-	// }
+	width_ = undistorter->getOutputWidth();
+	height_ = undistorter->getOutputHeight();
 
 	haveCalib = true;
 }
@@ -97,9 +84,49 @@ void OpenCVImageStreamThread::run()
 
 void OpenCVImageStreamThread::operator()()
 {
-	// What should we do?
-	// ros::spin();
+	// Main thread here. Grab and decode images:
+	VideoCapture cap;
+	// open the default camera, use something different from 0 otherwise;
+	// Check VideoCapture documentation.
+	if(!cap.open(0)) {
+		std::cout << "Camera could not be opened" << std::endl;
+		exit(0);
+	}
+	cap.set(CV_CAP_PROP_FRAME_WIDTH,320); // TODO change to match calib file
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT,240);
+	cap.set(CV_CAP_PROP_FPS,60);
+	{
+		Mat frame;
+		cap >> frame;
+		if( !frame.empty() )
+		{
+			printf( "Camera opend with parameters: W:%d, H:%d\n", frame.size().width, frame.size().height );
+			printf( "requested: W:%f, H:%f\n", 
+				cap.get(CV_CAP_PROP_FRAME_WIDTH),
+				cap.get(CV_CAP_PROP_FRAME_HEIGHT) );
+		}
+	}
+	for(;;)
+	{
+		TimestampedMat bufferItem;
+		Mat frame;
 
+		bufferItem.timestamp =  Timestamp(0);
+		cap >> frame;
+
+		if( frame.empty() ) { 
+			printf( "Camera error!\n");
+			break;
+		}; // end of video stream
+
+		cv::cvtColor(frame, frame, CV_BGR2GRAY);
+		undistorter->undistort(frame, bufferItem.data);
+
+		imageBuffer->pushBack(bufferItem);
+	}
+
+	// For some reason the camera failed. End program. (Probably should restart it to prevent crash, or alt least perform safe landing)
+	printf( "Camera error, shutting down (camera unplugged?)\n" );
 	exit(0);
 }
 
