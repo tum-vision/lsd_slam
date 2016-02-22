@@ -14,6 +14,7 @@ ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/thirdparty/Sophus)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(catkin REQUIRED COMPONENTS
+  cmake_modules REQUIRED
   cv_bridge
   dynamic_reconfigure
   sensor_msgs
@@ -69,6 +70,7 @@ include_directories(
 )  
 
 add_executable(viewer src/main_viewer.cpp ${SOURCE_FILES} ${HEADER_FILES})
+add_dependencies(viewer lsd_slam_viewer_generate_messages_cpp)
 target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 			     ${QGLVIEWER_LIBRARY} 
 			     ${catkin_LIBRARIES}

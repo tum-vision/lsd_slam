@@ -12,8 +12,9 @@
   <url>http://vision.in.tum.de/lsdslam</url>
   
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>cv_bridge</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>cv_bridge</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>lsd_slam_viewer</build_depend>
