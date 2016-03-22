@@ -270,7 +270,7 @@ private:
 		bool reActivationDataValid;
 
 
-		// data from initial tracking, indicating which pixels in the reference frame ware good or not.
+		// data from initial tracking, indicating which pixels in the reference frame were good or not.
 		// deleted as soon as frame is used for mapping.
 		bool* refPixelWasGood;
 	};
