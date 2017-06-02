@@ -23,6 +23,7 @@
 //#define GL3_PROTOTYPES 1
 //#include <GL/glew.h>
 
+#include "QtGlobal"
 #include "QGLViewer/qglviewer.h"
 #include <vector>
 #include "boost/thread.hpp"
@@ -132,7 +133,7 @@ public:
 		int showCurrentCam_i = showCurrentCam;
 		int isFix_i = isFix;
 
-		float x,y,z;
+		qreal x,y,z;
 		frame.getPosition(x,y,z);
 
     	snprintf(buf, 1000, "Animation: %d at %lf (dur %lf) S: %f %f %d %d %d %d %d Frame: %lf %lf %lf %lf %f %f %f %d",
