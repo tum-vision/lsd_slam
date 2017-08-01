@@ -132,7 +132,7 @@ public:
 		int showCurrentCam_i = showCurrentCam;
 		int isFix_i = isFix;
 
-		double x,y,z; //float x,y,z;
+		qreal x,y,z; //float x,y,z;
 		frame.getPosition(x,y,z);
 
     	snprintf(buf, 1000, "Animation: %d at %lf (dur %lf) S: %f %f %d %d %d %d %d Frame: %lf %lf %lf %lf %f %f %f %d",
