@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosbag
   message_generation
   roslib
+  cmake_modules
 )
 
 find_package(OpenGL REQUIRED)
@@ -48,6 +49,7 @@ generate_dynamic_reconfigure_options(
   cfg/LSDSLAMViewerParams.cfg
 )
 
+catkin_package()
 
 # Sources files
 set(SOURCE_FILES         
