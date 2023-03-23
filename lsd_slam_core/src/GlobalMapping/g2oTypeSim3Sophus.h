@@ -93,7 +93,7 @@ public:
 	
 	virtual bool setMeasurementData(const double* m)
 	{
-		Eigen::Map<const g2o::Vector7d> v(m);
+		Eigen::Map<const Eigen::Matrix<double, 7 ,1> > v(m);
 		setMeasurement(Sophus::Sim3d::exp(v));
 		return true;
 	}

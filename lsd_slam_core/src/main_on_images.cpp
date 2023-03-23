@@ -221,7 +221,7 @@ int main( int argc, char** argv )
 
 	for(unsigned int i=0;i<files.size();i++)
 	{
-		cv::Mat imageDist = cv::imread(files[i], CV_LOAD_IMAGE_GRAYSCALE);
+		cv::Mat imageDist = cv::imread(files[i], cv::IMREAD_GRAYSCALE);
 
 		if(imageDist.rows != h_inp || imageDist.cols != w_inp)
 		{
