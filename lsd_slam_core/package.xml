@@ -16,20 +16,22 @@
   <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>roscpp</build_depend>
-  <build_depend>lsd_slam_viewer</build_depend>
+  <build_depend>lsd_slam_msgs</build_depend>
   <build_depend>rosbag</build_depend>
   <build_depend>eigen</build_depend>
   <build_depend>suitesparse</build_depend>
   <build_depend>libg2o</build_depend>
+  <build_depend>cmake_modules</build_depend>
 
   <run_depend>cv_bridge</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>roscpp</run_depend>
-  <run_depend>lsd_slam_viewer</run_depend>
+  <run_depend>lsd_slam_msgs</run_depend>
   <run_depend>rosbag</run_depend>
   <run_depend>eigen</run_depend>
   <run_depend>suitesparse</run_depend>
   <run_depend>libg2o</run_depend>
-  
+  <run_depend>cmake_modules</run_depend>
+
 </package> 

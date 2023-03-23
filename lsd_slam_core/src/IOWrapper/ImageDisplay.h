@@ -48,7 +48,7 @@ inline void displayImage(const char* windowName, const float* image, int width, 
 	cv::Mat floatWrapper(height, width, CV_32F, const_cast<float*>(image));
 	cv::Mat tempImage(height, width, CV_8UC1);
 	floatWrapper.convertTo(tempImage, CV_8UC1);
-	cv::cvtColor(tempImage, tempImage, CV_GRAY2RGB);
+	cv::cvtColor(tempImage, tempImage, cv::COLOR_GRAY2RGB);
 	displayImage(windowName, tempImage);
 }
 

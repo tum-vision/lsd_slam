@@ -884,7 +884,7 @@ void drawRichKeypoints(const cv::Mat& src, std::vector<cv::KeyPoint>& kpts, cv::
 	
 	cv::Mat grayFrame;
 	cvtColor(src, grayFrame, CV_RGB2GRAY);
-	cvtColor(grayFrame, dst, CV_GRAY2RGB);
+	cvtColor(grayFrame, dst, cv::COLOR_GRAY2RGB);
 	
 	if (kpts.size() == 0) {
 		return;

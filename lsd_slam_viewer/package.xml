@@ -19,6 +19,9 @@
   <build_depend>roslib</build_depend>
   <build_depend>rosbag</build_depend>
   <build_depend>message_generation</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>lsd_slam_msgs</build_depend>
+<!--  <build_depend>libqglviewer-qt4-dev</build_depend>-->
 
   <run_depend>cv_bridge</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
@@ -26,6 +29,9 @@
   <run_depend>roscpp</run_depend>
   <run_depend>roslib</run_depend>
   <run_depend>rosbag</run_depend>
+  <run_depend>cmake_modules</run_depend>
+  <run_depend>lsd_slam_msgs</run_depend>
+<!--  <run_depend>libqglviewer-qt4</run_depend>-->
 
 </package>
 

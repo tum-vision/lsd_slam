@@ -19,14 +19,20 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   roscpp
   rosbag
-  message_generation
+#  message_generation
   roslib
+  cmake_modules
+  lsd_slam_msgs
 )
 
 find_package(OpenGL REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 set(QT_USE_QTXML TRUE)
 find_package(QGLViewer REQUIRED)
+message(STATUS "QGLViewer version: ${QGLViewer_VERSION}")
+message(STATUS "QGLViewer include directories: ${QGLViewer_INCLUDE_DIRS}")
+message(STATUS "QGLViewer libraries: ${QGLViewer_LIBRARIES}")
+set(QGLVIEWER_LIBRARY /usr/lib/x86_64-linux-gnu/libQGLViewer-qt4.so)
 find_package(Eigen REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -41,8 +47,8 @@ set(CMAKE_CXX_FLAGS
    "${CMAKE_CXX_FLAGS} -march=native -Wall -std=c++0x"
 )
 
-add_message_files(DIRECTORY msg FILES keyframeMsg.msg keyframeGraphMsg.msg)
-generate_messages(DEPENDENCIES)
+#add_message_files(DIRECTORY msg FILES keyframeMsg.msg keyframeGraphMsg.msg)
+#generate_messages(DEPENDENCIES)
 
 generate_dynamic_reconfigure_options(
   cfg/LSDSLAMViewerParams.cfg
@@ -69,6 +75,7 @@ include_directories(
 )  
 
 add_executable(viewer src/main_viewer.cpp ${SOURCE_FILES} ${HEADER_FILES})
+add_dependencies(viewer lsd_slam_viewer_generate_messages_cpp)
 target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 			     ${QGLVIEWER_LIBRARY} 
 			     ${catkin_LIBRARIES}
@@ -84,4 +91,4 @@ target_link_libraries(viewer ${QGLViewer_LIBRARIES}
 #			     ${QT_LIBRARIES}
 #			     GL glut GLU
 #		      )
-
+#add_dependencies(videoStitch lsd_slam_viewer_generate_messages_cpp)
